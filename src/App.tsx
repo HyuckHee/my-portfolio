@@ -285,13 +285,14 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-mono bg-gray-800 border border-gray-700 hover:border-accent/60 hover:text-accent text-gray-400 px-2.5 py-1 rounded-md transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-mono bg-gray-800/80 border border-gray-700 hover:border-accent/60 hover:text-accent text-gray-400 pl-2 pr-2.5 py-1 rounded-full transition-colors"
                 aria-label="Live Site"
               >
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10"/><path strokeLinecap="round" d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-                {new URL(project.liveUrl).hostname}
+                <span className="flex items-center justify-center w-4 h-4 rounded-full bg-green-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                </span>
+                <span className="text-gray-500">https://</span>{new URL(project.liveUrl).hostname}
+                <svg className="w-3 h-3 shrink-0 opacity-50" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
               </a>
             )}
             {project.githubUrl && (
