@@ -107,6 +107,7 @@ const PROJECTS = [
       'Next.js App Router SSR + 인터랙티브 환율 전환',
     ],
     result: '6개 스토어에서 30분~2시간 주기로 가격 자동 수집, 30일 가격 히스토리 차트, 목표가 알림 기능 구현.',
+    note: '현재 로컬에 누적된 크롤링 데이터를 목데이터로 활용하여 서비스를 시연하고 있으며, Cloud 서버 연동 및 실시간 수집 파이프라인 배포를 준비 중입니다.',
     tags: ['Next.js 15', 'NestJS', 'PostgreSQL', 'Drizzle ORM', 'Bull + Redis', 'Playwright', 'Tailwind CSS', 'Docker'],
     highlights: [
       { label: '아키텍처', value: 'Scheduler → Queue → Processor 3단 분리' },
@@ -614,6 +615,12 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
             <h4 className="text-sm font-semibold text-green-400 mb-1.5">Result</h4>
             <p className="text-gray-400 text-sm leading-relaxed">{project.result}</p>
           </div>
+          {project.note && (
+            <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3 mt-2">
+              <span className="text-yellow-400 text-base shrink-0">⚠</span>
+              <p className="text-yellow-300/80 text-xs leading-relaxed">{project.note}</p>
+            </div>
+          )}
         </div>
 
         {/* Highlights */}
