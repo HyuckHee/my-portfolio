@@ -175,7 +175,6 @@ const PROJECTS = [
       'BOM, 재고 현황, 자재 이동 등 생산관리 핵심 화면 개발',
       '품질관리 및 결재 프로세스 기능 구현',
       'UbiReport 기반 일지·레포트 전산화',
-      '사용자 중심 화면 구성과 기능 흐름 설계',
     ],
     result: '생산 및 품질관리 업무를 시스템 중심으로 운영 가능하게 하여 현장 운영 편의성과 데이터 접근성을 개선했습니다.',
     tags: ['Java', 'JavaScript', 'React', 'MSSQL', 'Syncfusion', 'UbiReport'],
