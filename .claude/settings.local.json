@@ -3,7 +3,24 @@
     "allow": [
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(//Users/husker/**)",
+      "Bash(psql \"postgresql://pcpriceUser:!asd123456@localhost:5432/pcpricetrack\" -c \"SELECT COUNT\\(*\\) as total, COUNT\\(*\\) FILTER \\(WHERE image_url IS NOT NULL\\) as has_image FROM products;\")",
+      "Bash(brew list:*)",
+      "Bash(docker start:*)",
+      "Bash(brew services:*)",
+      "Bash(pg_isready -h localhost -p 5432)",
+      "Bash(sudo lsof:*)",
+      "Bash(docker run:*)",
+      "Bash(/Library/PostgreSQL/18/bin/psql \"postgresql://pcpriceUser:!asd123456@localhost:5432/pcpricetrack\" -c \"SELECT p.name, p.brand, p.slug, p.image_url, c.slug as cat_slug FROM products p JOIN categories c ON c.id = p.category_id WHERE p.image_url IS NOT NULL ORDER BY c.slug, p.name;\")",
+      "Bash(/Library/PostgreSQL/18/bin/psql \"postgresql://pcpriceUser:!asd123456@localhost:5432/pcpricetrack\" -c \":*)",
+      "Bash(/Library/PostgreSQL/18/bin/psql \"postgresql://pcpriceUser:!asd123456@localhost:5432/pcpricetrack\" -t -A -F '|' -c \":*)",
+      "Bash(npx turbo:*)",
+      "Bash(npm run:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(grep -r \"port\" vite.config.*)",
+      "Bash(python3:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
