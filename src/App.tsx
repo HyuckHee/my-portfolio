@@ -107,7 +107,7 @@ const PROJECTS = [
       'Next.js App Router SSR + 인터랙티브 환율 전환',
     ],
     result: '6개 스토어에서 30분~2시간 주기로 가격 자동 수집, 30일 가격 히스토리 차트, 목표가 알림 기능 구현.',
-    note: 'Oracle Cloud Always Free 인스턴스 생성 이슈(용량 부족)로 인해 Render · Railway · Fly.io 등 무료 플랫폼으로 크롤링 서버를 대체 연결하는 방향으로 전환하였습니다. 현재는 로컬에 누적된 데이터를 목데이터로 시연 중이며, 무료 서버 환경에서의 안정적인 배포를 검토하고 있습니다.',
+    note: 'Oracle Cloud Always Free 인스턴스 생성 자체 오류로 인해 Render · Railway · Fly.io 등 무료 플랫폼으로 크롤링 서버를 대체 연결하는 방향으로 전환하였습니다. 현재는 로컬에 누적된 데이터를 목데이터로 시연 중이며, 무료 서버 환경에서의 안정적인 배포를 검토하고 있습니다.',
     tags: ['Next.js 15', 'NestJS', 'PostgreSQL', 'Drizzle ORM', 'Bull + Redis', 'Playwright', 'Tailwind CSS', 'Docker'],
     highlights: [
       { label: '아키텍처', value: 'Scheduler → Queue → Processor 3단 분리' },
