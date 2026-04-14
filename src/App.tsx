@@ -93,7 +93,7 @@ const PROJECTS = [
     id: 'project-pcpricetrack',
     title: 'PCPriceTrack',
     subtitle: 'PC 부품 실시간 가격 추적 서비스',
-    period: { start: '2026-02', end: '2026-03' },
+    period: { start: '2026-03', end: null },
     company: null as string | null,
     role: '개인 프로젝트',
     liveUrl: 'https://pc-price-track-web.vercel.app/' as string | null,
@@ -455,17 +455,19 @@ function ProjectGantt() {
   const ref = useFadeIn();
 
   const rangeStart = new Date(2020, 9);  // 2020-10
-  const rangeEnd   = new Date(2025, 5);  // 2025-06
+  const rangeEnd   = new Date(2026, 5);  // 2026-06
   const totalMonths = (rangeEnd.getFullYear() - rangeStart.getFullYear()) * 12
     + (rangeEnd.getMonth() - rangeStart.getMonth());
 
   const toPercent = (dateStr: string) => {
     const [y, m] = dateStr.split('-').map(Number);
     const months = (y - rangeStart.getFullYear()) * 12 + (m - 1 - rangeStart.getMonth());
-    return (months / totalMonths) * 100;
+    return Math.min((months / totalMonths) * 100, 100);
   };
 
-  const years = [2021, 2022, 2023, 2024, 2025];
+  const nowStr = (() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`; })();
+
+  const years = [2021, 2022, 2023, 2024, 2025, 2026];
   const sorted = [...PROJECTS].sort((a, b) => a.period.start.localeCompare(b.period.start));
 
   return (
@@ -487,14 +489,16 @@ function ProjectGantt() {
       {/* Bars */}
       <div className="space-y-2.5">
         {sorted.map((project) => {
+          const endStr = project.period.end ?? nowStr;
           const left  = toPercent(project.period.start);
-          const right = toPercent(project.period.end);
+          const right = toPercent(endStr);
           const width = right - left;
           const color = GANTT_COLOR[project.id] ?? 'bg-gray-500';
+          const isOngoing = !project.period.end;
 
           const [sy, sm] = project.period.start.split('-');
-          const [ey, em] = project.period.end.split('-');
-          const label = `${sy}.${sm} - ${ey}.${em}`;
+          const [ey, em] = endStr.split('-');
+          const label = isOngoing ? `${sy}.${sm} ~ 진행 중` : `${sy}.${sm} - ${ey}.${em}`;
 
           return (
             <a key={project.id} href={`#${project.id}`} className="flex items-center gap-3 group">
@@ -550,8 +554,9 @@ function ProjectGantt() {
 function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
   const ref = useFadeIn();
   const [sy, sm] = project.period.start.split('-');
-  const [ey, em] = project.period.end.split('-');
-  const periodLabel = `${sy}.${sm} ~ ${ey}.${em}`;
+  const periodLabel = project.period.end
+    ? (() => { const [ey, em] = project.period.end!.split('-'); return `${sy}.${sm} ~ ${ey}.${em}`; })()
+    : `${sy}.${sm} ~ 진행 중`;
   const color = GANTT_COLOR[project.id] ?? 'bg-gray-500';
 
   return (
