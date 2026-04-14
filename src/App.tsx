@@ -401,33 +401,33 @@ function Experience() {
     <section id="experience" ref={ref} className="fade-section py-24 bg-gray-900/30">
       <div className="max-w-5xl mx-auto px-6">
         <h2 className="text-3xl font-bold mb-10">Experience</h2>
-        <div className="space-y-12">
+      </div>
+      <div className="pl-6 sm:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
+        <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
           {EXPERIENCE.map((exp) => (
-            <div key={exp.period} className="relative pl-8 border-l-2 border-gray-800">
-              <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-accent border-4 border-gray-950" />
-              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-4">
-                <h3 className="text-xl font-semibold">{exp.company}</h3>
-                <span className="text-sm text-gray-500">{exp.role}</span>
-                <span className="text-sm text-accent">{exp.period}</span>
+            <div key={exp.period} className="min-w-[320px] sm:min-w-[400px] max-w-[400px] shrink-0 snap-start bg-gray-900 border border-gray-800 rounded-2xl p-6 flex flex-col">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-white leading-tight">{exp.company}</h3>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mt-1">
+                  <span className="text-xs text-gray-500">{exp.role}</span>
+                  <span className="text-xs text-accent">{exp.period}</span>
+                </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 flex-1">
                 {exp.items.map((item, i) => (
-                  <div key={i} className="bg-gray-900/60 border border-gray-800/60 rounded-xl px-5 py-4">
-                    <div className="flex items-start justify-between gap-3">
+                  <div key={i} className="bg-gray-800/50 border border-gray-700/50 rounded-xl px-4 py-3">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 mb-1.5">
+                        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
                           <h4 className="text-gray-100 font-semibold text-sm">{item.title}</h4>
                           <span className="text-xs text-gray-600">{item.period}</span>
                         </div>
-                        <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
-                        <p className="text-xs text-gray-600 mt-2">🛠 {item.env}</p>
+                        <p className="text-gray-500 text-xs leading-relaxed">{item.desc}</p>
+                        <p className="text-xs text-gray-600 mt-1.5">🛠 {item.env}</p>
                       </div>
                       {item.projectId && (
-                        <a
-                          href={`#${item.projectId}`}
-                          className="shrink-0 flex items-center gap-1.5 text-xs bg-gray-800 hover:bg-accent/20 border border-gray-700 hover:border-accent/50 text-gray-400 hover:text-accent px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
-                        >
-                          상세 보기
+                        <a href={`#${item.projectId}`} className="shrink-0 flex items-center gap-1 text-xs bg-gray-700 hover:bg-accent/20 border border-gray-600 hover:border-accent/50 text-gray-400 hover:text-accent px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap">
+                          상세
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                           </svg>
@@ -437,13 +437,15 @@ function Experience() {
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-2 mt-4">
+              <div className="flex flex-wrap gap-1.5 mt-4">
                 {exp.tags.map((t) => (
-                  <span key={t} className="text-xs bg-accent/10 text-accent px-2.5 py-1 rounded-full">{t}</span>
+                  <span key={t} className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">{t}</span>
                 ))}
               </div>
             </div>
           ))}
+          {/* 끝 여백 */}
+          <div className="min-w-6 shrink-0" />
         </div>
       </div>
     </section>
@@ -657,10 +659,16 @@ function Projects() {
       <div className="max-w-5xl mx-auto px-6">
         <h2 className="text-3xl font-bold mb-10">Projects</h2>
         <ProjectGantt />
-        <div className="space-y-8">
+      </div>
+      <div className="pl-6 sm:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
+        <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
           {PROJECTS.map((p) => (
-            <ProjectCard key={p.id} project={p} />
+            <div key={p.id} className="min-w-[340px] sm:min-w-[520px] max-w-[520px] shrink-0 snap-start">
+              <ProjectCard project={p} />
+            </div>
           ))}
+          {/* 끝 여백 */}
+          <div className="min-w-6 shrink-0" />
         </div>
       </div>
     </section>
