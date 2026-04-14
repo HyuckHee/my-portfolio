@@ -93,7 +93,7 @@ const PROJECTS = [
     id: 'project-pcpricetrack',
     title: 'PCPriceTrack',
     subtitle: 'PC 부품 실시간 가격 추적 서비스',
-    period: { start: '2025-02', end: '2025-03' },
+    period: { start: '2026-02', end: '2026-03' },
     company: null as string | null,
     role: '개인 프로젝트',
     liveUrl: 'https://pc-price-track-web.vercel.app/' as string | null,
