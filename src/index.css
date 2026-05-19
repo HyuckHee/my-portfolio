@@ -7,11 +7,12 @@ html {
 }
 
 body {
-  @apply bg-gray-950 text-gray-100 antialiased;
+  @apply bg-[#0a0a0a] text-gray-100 antialiased;
 }
 
 ::selection {
-  @apply bg-accent/30 text-white;
+  background: rgba(0, 255, 65, 0.2);
+  color: white;
 }
 
 /* Section fade-in */
@@ -23,4 +24,18 @@ body {
 .fade-section.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Scrollbar hide for cross-browser */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cursor blinking */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.cursor-blink {
+  animation: blink 1s step-end infinite;
 }

@@ -5,9 +5,10 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Pretendard', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       colors: {
-        accent: { DEFAULT: '#3B82F6', light: '#60A5FA', dark: '#2563EB' },
+        accent: { DEFAULT: '#00ff41', light: '#33ff66', dark: '#00cc33' },
       },
     },
   },
