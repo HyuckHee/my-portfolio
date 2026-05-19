@@ -516,9 +516,6 @@ function Navbar() {
               <span className="text-[#444]">./</span>{item.toLowerCase()}
             </a>
           ))}
-          <a href="/이혁희_이력서.pdf" target="_blank" className="text-xs bg-[#00ff41]/10 hover:bg-[#00ff41]/20 text-[#00ff41] border border-[#00ff41]/30 px-3 py-1 rounded transition-colors font-mono">
-            resume.pdf
-          </a>
         </div>
       </div>
     </nav>
