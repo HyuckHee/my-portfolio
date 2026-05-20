@@ -292,6 +292,25 @@ const PROJECTS = [
       { label: '안정성', value: '서킷브레이커 + 지수 백오프 재시도' },
       { label: '모노레포', value: 'Turborepo + pnpm 워크스페이스' },
     ],
+    diagram: `┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│  Scheduler  │────▶│  Bull Queue  │────▶│  Processor  │
+│  (Cron)     │     │  (Redis)     │     │ (Playwright)│
+└─────────────┘     └──────────────┘     └──────┬──────┘
+                                                │
+                    ┌──────────────┐             │
+                    │ Circuit      │◀────────────┘
+                    │ Breaker      │
+                    └──────┬───────┘
+                           │
+              ┌────────────▼────────────┐
+              │   PostgreSQL (Supabase) │
+              │   append-only prices    │
+              └────────────┬────────────┘
+                           │
+              ┌────────────▼────────────┐
+              │  Next.js SSR (Vercel)   │
+              │  가격 차트 + 환율 전환    │
+              └─────────────────────────┘`,
   },
   {
     id: 'project-ktx-helper',
@@ -318,6 +337,26 @@ const PROJECTS = [
       { label: '자동화', value: '좌석 감지 → 클릭 → 팝업 확인 → 예매' },
       { label: 'UX', value: '드래그 퀵바 + 시간 프리셋 + 실시간 로그' },
     ],
+    diagram: `┌──────────────────┐     ┌──────────────────┐
+│ Service Worker   │────▶│  Content Script  │
+│ (Background)     │     │  (MAIN world)    │
+└────────┬─────────┘     └────────┬─────────┘
+         │                        │
+         │  chrome.runtime        │  DOM 이벤트
+         │  .sendMessage          │  직접 호출
+         │                        ▼
+         │               ┌──────────────────┐
+         │               │  KTX 예매 페이지  │
+         │               │  React DOM       │
+         │               └────────┬─────────┘
+         │                        │
+         │               MutationObserver
+         │                        │
+         ▼                        ▼
+┌──────────────────┐     ┌──────────────────┐
+│  퀵바 UI         │     │  자동 예매 Flow   │
+│  (Floating)      │     │  감지→클릭→확인   │
+└──────────────────┘     └──────────────────┘`,
   },
   {
     id: 'project-samsung',
@@ -341,6 +380,17 @@ const PROJECTS = [
       { label: '역할', value: '프론트엔드 운영 및 기능 개선' },
       { label: '도메인', value: '자동차보험 / 장기계약 / 계약관리' },
     ],
+    diagram: `┌─────────────────────────────────────┐
+│         다이렉트착 앱 (Mobile)       │
+├──────────┬──────────┬───────────────┤
+│ 자동차   │ 장기     │ 계약관리       │
+│ 보험     │ 보험     │               │
+├──────────┴──────────┴───────────────┤
+│  Frontend: React + Vue              │
+│  Vue → React 점진적 마이그레이션     │
+├─────────────────────────────────────┤
+│  API Gateway / Backend              │
+└─────────────────────────────────────┘`,
   },
   {
     id: 'project-mes-cj',
@@ -364,6 +414,23 @@ const PROJECTS = [
       { label: '모바일', value: 'PDA 품질관리 기능 대응' },
       { label: '환경', value: 'MSA 구조' },
     ],
+    diagram: `┌────────────┐          ┌────────────┐
+│  jQuery    │ ──────▶  │   React    │
+│  (Legacy)  │ 전환     │  (Modern)  │
+└────────────┘          └─────┬──────┘
+                              │
+         ┌────────────────────┼────────────┐
+         │                    │            │
+    ┌────▼─────┐    ┌────────▼──┐   ┌─────▼────┐
+    │ 실적관리  │    │ 품질관리   │   │ PDA 모바일│
+    │ 화면     │    │ 화면      │   │ 품질기능  │
+    └──────────┘    └───────────┘   └──────────┘
+         │                │              │
+         └────────────────┼──────────────┘
+                     ┌────▼────┐
+                     │ Oracle  │
+                     │   DB    │
+                     └─────────┘`,
   },
   {
     id: 'project-mes-jadein',
@@ -387,6 +454,18 @@ const PROJECTS = [
       { label: '리포트', value: 'UbiReport 전산화' },
       { label: '환경', value: '제조 현장 운영 시스템' },
     ],
+    diagram: `┌──────────────────────────────────┐
+│        쟈뎅 MES System           │
+├────────┬────────┬────────┬───────┤
+│  BOM   │  재고  │ 자재   │ 품질  │
+│  관리  │  현황  │ 이동   │ 관리  │
+├────────┴────────┴────────┴───────┤
+│  React + Syncfusion Grid         │
+├──────────────────────────────────┤
+│  Java / Spring Backend           │
+├──────────────────────────────────┤
+│  MSSQL  │  UbiReport (일지출력)  │
+└─────────┴────────────────────────┘`,
   },
   {
     id: 'project-haccp-culti',
@@ -410,6 +489,17 @@ const PROJECTS = [
       { label: '범위', value: '잔당 실적 / 품질관리 / 일지' },
       { label: '환경', value: 'BIO 생산 현장' },
     ],
+    diagram: `┌──────────────────────────────┐
+│    컬티 BIO HACCP System     │
+├──────────┬───────┬───────────┤
+│ 잔당실적 │ 품질  │  일지입력  │
+│ 처리     │ 관리  │           │
+├──────────┴───────┴───────────┤
+│  Micube Framework            │
+├──────────────────────────────┤
+│  MSSQL   │  JasperReport    │
+│  (Data)  │  (법적 리포트)    │
+└──────────┴───────────────────┘`,
   },
   {
     id: 'project-haccp-hwayo',
@@ -433,6 +523,20 @@ const PROJECTS = [
       { label: '전환', value: '수기 일지 → 전산화' },
       { label: '범위', value: '일지 결재 / 상품일지' },
     ],
+    diagram: `┌──────────────────────────────┐
+│    화요 HACCP Solution       │
+├──────────────┬───────────────┤
+│  일지 결재    │  상품일지     │
+│  프로세스     │  기능         │
+├──────────────┴───────────────┤
+│  수기 ──────▶ 전산화         │
+├──────────────────────────────┤
+│  Vue.js + Spring Framework   │
+├──────────────────────────────┤
+│  MSSQL                       │
+├──────────────────────────────┤
+│  ✓ SMART HACCP 인증 획득     │
+└──────────────────────────────┘`,
   },
 ];
 
@@ -833,6 +937,14 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
                 <div className="text-xs font-mono text-[#aaa]">{h.value}</div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Architecture Diagram */}
+        {project.diagram && (
+          <div className="mt-4 bg-[#080808] border border-[#1a1a1a] rounded p-4 overflow-x-auto">
+            <div className="text-[10px] font-mono text-[#444] mb-2">// architecture</div>
+            <pre className="text-[11px] sm:text-xs font-mono text-[#00ff41]/70 leading-relaxed whitespace-pre">{project.diagram}</pre>
           </div>
         )}
 
