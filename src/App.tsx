@@ -626,17 +626,47 @@ function Navbar() {
   );
 }
 
+const HERO_STATS = [
+  { value: '4+', label: 'years', sub: '풀스택 경력' },
+  { value: '7+', label: 'projects', sub: '엔터프라이즈 + 개인' },
+  { value: '2', label: 'domains', sub: '제조 / 보험' },
+  { value: '2', label: 'migrations', sub: 'jQuery·Vue → React' },
+];
+
 function Hero() {
-  const { displayed: line1, done: done1 } = useTyping('안녕하세요, 저는', 40, 500);
-  const { displayed: line2, done: done2 } = useTyping('이혁희', 80, 1200);
-  const { displayed: line3 } = useTyping('실무형 풀스택 개발자입니다.', 30, 2000);
+  const { displayed: line1, done: done1 } = useTyping('whoami', 60, 500);
+  const { displayed: line2, done: done2 } = useTyping('이혁희', 80, 1400);
+  const { displayed: line3, done: done3 } = useTyping('Full-Stack Developer · React + Vue · 레거시 → 모던 전환 전문', 22, 2200);
 
   return (
-    <section className="min-h-[90vh] flex items-center pt-14">
-      <div className="max-w-5xl mx-auto px-6 w-full">
-        <TerminalWindow title="hyuckhee@dev ~ % intro">
+    <section className="min-h-[90vh] flex items-center pt-14 relative overflow-hidden">
+      {/* Subtle grid background */}
+      <div
+        className="absolute inset-0 opacity-[0.07] pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(0,255,65,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,0.5) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+        }}
+      />
+
+      <div className="max-w-5xl mx-auto px-6 w-full relative">
+        <TerminalWindow title="hyuckhee@dev ~ % whoami">
           <div className="font-mono space-y-2">
-            <div className="text-[#666] text-xs mb-4">Last login: {new Date().toLocaleDateString('ko-KR')} on ttys001</div>
+            <div className="flex items-center justify-between gap-3 mb-4 text-xs">
+              <span className="hidden sm:inline text-[#666] truncate">
+                Last login: {new Date().toLocaleDateString('ko-KR')} on ttys001
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[#00ff41]/80 whitespace-nowrap ml-auto">
+                <span className="relative flex w-2 h-2">
+                  <span className="animate-ping absolute inline-flex w-full h-full rounded-full bg-[#00ff41] opacity-60" />
+                  <span className="relative inline-flex w-2 h-2 rounded-full bg-[#00ff41]" />
+                </span>
+                available for opportunities
+              </span>
+            </div>
 
             <div className="flex items-start gap-2">
               <span className="text-[#00ff41] shrink-0">$</span>
@@ -644,38 +674,76 @@ function Hero() {
             </div>
 
             <div className="flex items-start gap-2">
-              <span className="text-[#00ff41] shrink-0">$</span>
-              <span className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
-                {line2}{done1 && !done2 && <span className="animate-pulse text-[#00ff41]">_</span>}
-                <span className="text-[#333]">.</span>
+              <span className="text-[#00ff41] shrink-0 text-4xl sm:text-5xl lg:text-6xl leading-none">{'>'}</span>
+              <span className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+                {line2}
+                {done1 && !done2 && <span className="animate-pulse text-[#00ff41]">_</span>}
+                <span className="text-[#00ff41]">.</span>
               </span>
             </div>
 
             <div className="flex items-start gap-2">
               <span className="text-[#00ff41] shrink-0">$</span>
-              <span className="text-lg sm:text-xl text-[#888]">
-                {line3}{done2 && <span className="animate-pulse text-[#00ff41]">_</span>}
+              <span className="text-sm sm:text-base text-[#aaa] leading-relaxed">
+                {line3}{done2 && !done3 && <span className="animate-pulse text-[#00ff41]">_</span>}
               </span>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-[#1a1a1a]">
-              <p className="text-[#777] text-sm leading-relaxed font-sans">
+            {/* KPI Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-6 pt-4 border-t border-[#1a1a1a]">
+              {HERO_STATS.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="bg-[#080808] border border-[#1a1a1a] rounded px-3 py-3 hover:border-[#00ff41]/30 transition-colors"
+                >
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl sm:text-3xl font-bold text-[#00ff41] font-mono leading-none">{stat.value}</span>
+                    <span className="text-[10px] font-mono text-[#555]">{stat.label}</span>
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-[#777] mt-1.5 font-sans">{stat.sub}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Description */}
+            <div className="mt-4 pt-3 border-t border-[#1a1a1a]">
+              <p className="text-[#888] text-sm leading-relaxed font-sans">
                 4년간 <span className="text-[#00ff41]">삼성화재 보험 서비스</span>, <span className="text-[#00ff41]">CJ 제조 시스템</span>을 개발하며
                 레거시 개선부터 신규 서비스 구축까지 경험했습니다.
-              </p>
-              <p className="text-[#777] text-sm leading-relaxed font-sans mt-2">
-                <span className="text-[#ccc]">React/Vue 프론트엔드</span>와 <span className="text-[#ccc]">Java/Node.js 백엔드</span>를 넘나드는 풀스택 역량으로
-                비즈니스 문제를 기술로 해결합니다.
+                <span className="text-[#ccc]"> React/Vue 듀얼 프레임워크</span> 역량으로 두 번의 대규모 마이그레이션을 성공적으로 수행했습니다.
               </p>
             </div>
 
-            <div className="flex gap-3 mt-6 font-mono">
+            {/* CTA + Social */}
+            <div className="flex flex-wrap items-center gap-3 mt-6 font-mono">
               <a href="#projects" className="bg-[#00ff41] hover:bg-[#00cc33] text-black px-5 py-2.5 rounded text-sm font-semibold transition-colors">
                 ls ./projects
               </a>
               <a href="#contact" className="border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] px-5 py-2.5 rounded text-sm transition-colors">
                 cat contact.txt
               </a>
+              <div className="flex items-center gap-2 ml-auto">
+                <a
+                  href="https://github.com/HyuckHee"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="GitHub"
+                  className="w-9 h-9 flex items-center justify-center border border-[#222] hover:border-[#00ff41]/50 text-[#666] hover:text-[#00ff41] rounded transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z" />
+                  </svg>
+                </a>
+                <a
+                  href="mailto:leehh4864@gmail.com"
+                  aria-label="Email"
+                  className="w-9 h-9 flex items-center justify-center border border-[#222] hover:border-[#00ff41]/50 text-[#666] hover:text-[#00ff41] rounded transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </TerminalWindow>
@@ -683,6 +751,29 @@ function Hero() {
     </section>
   );
 }
+
+const DIFFERENTIATORS = [
+  {
+    icon: '⟷',
+    title: 'React + Vue 듀얼',
+    desc: '두 프레임워크를 실무에서 모두 운영. Vue→React 마이그레이션을 직접 수행하며 양쪽의 차이와 전환 전략을 체득.',
+  },
+  {
+    icon: '↻',
+    title: '레거시 → 모던 전환',
+    desc: 'jQuery→React, Vue→React 두 차례의 대규모 마이그레이션 경험. 점진적 전환 전략을 수립할 수 있는 실무 감각.',
+  },
+  {
+    icon: '⌘',
+    title: '제조 + 보험 도메인',
+    desc: 'CJ 제조 MES/HACCP와 삼성화재 보험 서비스 — 서로 다른 산업군에서의 실무 경험으로 빠른 도메인 학습 능력 보유.',
+  },
+  {
+    icon: '∞',
+    title: '설계 역량 증명',
+    desc: 'PCPriceTrack에서 분산 크롤링, 서킷브레이커, append-only 가격 이력, 모노레포까지 직접 설계/구현.',
+  },
+];
 
 function About() {
   const ref = useFadeIn();
@@ -693,6 +784,30 @@ function About() {
           <span className="text-[#00ff41]">#</span> About
           <span className="text-[#333] text-sm font-normal ml-2">// 소개</span>
         </h2>
+
+        {/* Core differentiators — leading message */}
+        <div className="mb-8">
+          <div className="text-[11px] font-mono text-[#00ff41]/70 mb-3 uppercase tracking-widest">
+            <span className="text-[#333]">$</span> cat ./why-me.md
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {DIFFERENTIATORS.map((item) => (
+              <div
+                key={item.title}
+                className="group relative bg-[#0d0d0d] border border-[#1a1a1a] hover:border-[#00ff41]/40 rounded-lg p-4 transition-all hover:-translate-y-0.5"
+              >
+                <div className="absolute top-2 right-3 text-2xl text-[#00ff41]/20 group-hover:text-[#00ff41]/40 font-mono transition-colors">
+                  {item.icon}
+                </div>
+                <h3 className="text-sm font-mono font-semibold text-[#ccc] mb-2 pr-6">
+                  {item.title}
+                </h3>
+                <p className="text-[11px] text-[#777] leading-relaxed font-sans">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-6">
           <TerminalWindow title="about.md">
             <div className="space-y-3 text-[#999] text-sm leading-relaxed font-sans">
@@ -1023,27 +1138,6 @@ function Skills() {
           ))}
         </div>
 
-        {/* 차별화 포인트 */}
-        <div className="mt-10">
-          <TerminalWindow title="differentiators.md">
-            <h3 className="text-sm font-mono font-semibold text-[#00ff41] mb-4">// 차별화 포인트</h3>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {[
-                { title: 'React + Vue 듀얼 경험', desc: '삼성화재에서 Vue→React 마이그레이션을 직접 수행. 두 프레임워크의 차이와 전환 전략을 체득.' },
-                { title: '레거시 → 모던 전환 전문', desc: 'jQuery→React, Vue→React 두 번의 대규모 마이그레이션 경험. 점진적 전환 전략 수립 가능.' },
-                { title: '제조 도메인 + 보험 도메인', desc: '서로 다른 산업군에서의 실무 경험으로 빠른 도메인 학습 능력 보유.' },
-                { title: '사이드 프로젝트로 증명하는 설계 역량', desc: 'PCPriceTrack으로 분산 크롤링, 서킷브레이커, 모노레포 등 직접 설계/구현.' },
-              ].map((item) => (
-                <div key={item.title} className="border border-[#1a1a1a] rounded p-3 bg-[#080808]">
-                  <h4 className="text-xs font-mono text-[#ccc] mb-1">
-                    <span className="text-[#00ff41]">*</span> {item.title}
-                  </h4>
-                  <p className="text-[11px] text-[#666] leading-relaxed font-sans">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </TerminalWindow>
-        </div>
       </div>
     </section>
   );
