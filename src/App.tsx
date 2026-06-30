@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 /* ─── Horizontal Scroll Hook (with momentum drag) ─── */
 function useHorizontalScroll() {
@@ -1074,6 +1075,215 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
   );
 }
 
+/* ─── Side Project Gallery ─── */
+type Shot = { src: string; label: string };
+type GalleryItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  url: string;
+  liveUrl: string | null;
+  tags: string[];
+  shots: Shot[];
+};
+
+const GALLERY: GalleryItem[] = [
+  {
+    id: 'pcpricetrack',
+    title: 'PCPriceTrack',
+    subtitle: 'PC 부품 실시간 가격 추적',
+    url: 'pc-price-track-web.vercel.app',
+    liveUrl: 'https://pc-price-track-web.vercel.app/',
+    tags: ['Next.js 15', 'NestJS', 'Playwright'],
+    shots: [
+      { src: '/projects/pcpricetrack-deals.png', label: '특가 — 실시간 가격 인하 추적' },
+      { src: '/projects/pcpricetrack-home.png', label: '홈 — 국내외 최저가 비교' },
+    ],
+  },
+  {
+    id: 'ktx-helper',
+    title: 'KTX 자동 예매 도우미',
+    subtitle: 'KTX 빈자리 자동 감지·예매 확장',
+    url: 'Chrome Extension',
+    liveUrl: null,
+    tags: ['Chrome MV3', 'MutationObserver'],
+    shots: [],
+  },
+];
+
+/* ─── Lightbox ─── */
+function Lightbox({ item, index, onClose, onNav }: {
+  item: GalleryItem;
+  index: number;
+  onClose: () => void;
+  onNav: (dir: 1 | -1) => void;
+}) {
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') onNav(1);
+      if (e.key === 'ArrowLeft') onNav(-1);
+    };
+    window.addEventListener('keydown', h);
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', h); document.body.style.overflow = ''; };
+  }, [onClose, onNav]);
+
+  const shot = item.shots[index];
+  const multi = item.shots.length > 1;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 sm:p-8"
+      onClick={onClose}
+    >
+      <div className="w-full max-w-5xl flex items-center justify-between mb-3 font-mono" onClick={(e) => e.stopPropagation()}>
+        <div className="min-w-0">
+          <span className="text-[#00ff41] text-sm font-semibold">{item.title}</span>
+          <span className="text-[#666] text-xs ml-2 truncate">{shot.label}</span>
+        </div>
+        <button onClick={onClose} aria-label="닫기" className="w-8 h-8 flex items-center justify-center border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] rounded transition-colors shrink-0">
+          ✕
+        </button>
+      </div>
+
+      <div className="relative w-full max-w-5xl bg-[#0d0d0d] border border-[#222] rounded-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-1.5 px-3 py-2 bg-[#141414] border-b border-[#222]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+          <span className="ml-2 text-[10px] font-mono text-[#666] truncate">{item.url}</span>
+        </div>
+        <img src={shot.src} alt={`${item.title} — ${shot.label}`} className="w-full block max-h-[70vh] object-contain bg-[#0a0a0a]" />
+
+        {multi && (
+          <>
+            <button onClick={() => onNav(-1)} aria-label="이전" className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-black/60 hover:bg-black/80 border border-[#333] hover:border-[#00ff41]/50 text-[#ccc] hover:text-[#00ff41] rounded-full font-mono transition-colors">‹</button>
+            <button onClick={() => onNav(1)} aria-label="다음" className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-black/60 hover:bg-black/80 border border-[#333] hover:border-[#00ff41]/50 text-[#ccc] hover:text-[#00ff41] rounded-full font-mono transition-colors">›</button>
+          </>
+        )}
+      </div>
+
+      {multi && (
+        <div className="flex gap-1.5 mt-3" onClick={(e) => e.stopPropagation()}>
+          {item.shots.map((_, i) => (
+            <span key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === index ? 'bg-[#00ff41]' : 'bg-[#333]'}`} />
+          ))}
+        </div>
+      )}
+    </div>,
+    document.body,
+  );
+}
+
+/* ─── Gallery Card ─── */
+function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }) {
+  const hasShots = item.shots.length > 0;
+  return (
+    <div className="group bg-[#0d0d0d] border border-[#1a1a1a] hover:border-[#00ff41]/40 rounded-xl overflow-hidden transition-all hover:-translate-y-1">
+      {/* Browser chrome */}
+      <div className="flex items-center gap-1.5 px-3 py-2.5 bg-[#141414] border-b border-[#1a1a1a]">
+        <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+        <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+        <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+        <span className="ml-2 text-[10px] font-mono text-[#666] truncate">{item.url}</span>
+      </div>
+
+      {/* Screenshot or placeholder */}
+      {hasShots ? (
+        <button
+          onClick={onOpen}
+          className="relative block w-full aspect-[16/10] overflow-hidden bg-[#0a0a0a] cursor-zoom-in"
+          aria-label={`${item.title} 스크린샷 크게 보기`}
+        >
+          <img
+            src={item.shots[0].src}
+            alt={`${item.title} — ${item.shots[0].label}`}
+            loading="lazy"
+            className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="absolute bottom-2 right-2 flex items-center gap-1 text-[10px] font-mono text-[#00ff41] bg-black/70 border border-[#00ff41]/30 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            {item.shots.length > 1 ? `${item.shots.length} shots` : '크게 보기'}
+          </span>
+        </button>
+      ) : (
+        <div className="relative w-full aspect-[16/10] bg-[#0a0a0a] p-3 flex flex-col">
+          <div className="text-[10px] font-mono text-[#888] mb-2">서울 → 부산 · 자동 탐색</div>
+          <div className="grid grid-cols-4 gap-1.5 mb-2">
+            {['매진', '예약', '매진', '매진'].map((s, i) => (
+              <div key={i} className={`text-center text-[9px] font-mono rounded py-1.5 border ${s === '예약' ? 'bg-[#00ff41]/15 border-[#00ff41]/40 text-[#00ff41]' : 'bg-[#111] border-[#222] text-[#555]'}`}>{s}</div>
+            ))}
+          </div>
+          <div className="mt-auto flex items-center gap-2 bg-[#141414] border border-[#00ff41]/40 rounded-lg px-2.5 py-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] animate-pulse" />
+            <span className="text-[10px] font-mono text-[#ccc]">자동 탐색 중… 5초 간격</span>
+            <span className="ml-auto text-[10px] font-mono text-[#00ff41]">●REC</span>
+          </div>
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono text-[#555] border border-[#2a2a2a] rounded px-1.5 py-0.5">개념도</span>
+        </div>
+      )}
+
+      {/* Caption */}
+      <div className="p-4 border-t border-[#1a1a1a]">
+        <div className="flex items-center gap-2 mb-1.5">
+          <h4 className="text-sm font-mono font-semibold text-[#eee]">{item.title}</h4>
+          <span className="text-[9px] font-mono text-[#00ff41] bg-[#00ff41]/10 border border-[#00ff41]/20 px-1.5 py-0.5 rounded">personal</span>
+          {item.liveUrl && (
+            <a href={item.liveUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
+              className="ml-auto inline-flex items-center gap-1 text-[10px] font-mono text-[#555] hover:text-[#00ff41] transition-colors" aria-label="라이브 사이트 열기">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] animate-pulse" /> live
+            </a>
+          )}
+        </div>
+        <p className="text-[11px] text-[#888] font-sans mb-2.5 leading-relaxed">{item.subtitle}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {item.tags.map((t) => (
+            <span key={t} className="text-[9px] font-mono text-[#666] border border-[#222] rounded px-1.5 py-0.5">{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Gallery Section ─── */
+function ProjectGallery() {
+  const ref = useFadeIn();
+  const [box, setBox] = useState<{ item: number; idx: number } | null>(null);
+
+  const open = (item: number) => setBox({ item, idx: 0 });
+  const nav = useCallback((dir: 1 | -1) => {
+    setBox((b) => {
+      if (!b) return b;
+      const shots = GALLERY[b.item].shots;
+      return { ...b, idx: (b.idx + dir + shots.length) % shots.length };
+    });
+  }, []);
+
+  return (
+    <div ref={ref as React.RefObject<HTMLDivElement>} className="fade-section mb-8">
+      <div className="text-[11px] font-mono text-[#00ff41]/70 mb-3 uppercase tracking-widest">
+        <span className="text-[#333]">$</span> open ./side-projects --preview
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        {GALLERY.map((item, i) => (
+          <GalleryCard key={item.id} item={item} onOpen={() => open(i)} />
+        ))}
+      </div>
+      {box && (
+        <Lightbox
+          item={GALLERY[box.item]}
+          index={box.idx}
+          onClose={() => setBox(null)}
+          onNav={nav}
+        />
+      )}
+    </div>
+  );
+}
+
 function Projects() {
   const { scrollRef: projScrollRef, canScrollLeft: projLeft, canScrollRight: projRight, scrollBy: projScroll } = useHorizontalScroll();
   return (
@@ -1086,6 +1296,7 @@ function Projects() {
           </h2>
           <ScrollArrows canScrollLeft={projLeft} canScrollRight={projRight} onScroll={projScroll} />
         </div>
+        <ProjectGallery />
         <ProjectGantt />
       </div>
       <div className="pl-6 sm:pl-[max(1.5rem,calc((100vw-64rem)/2+1.5rem))]">
