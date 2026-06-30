@@ -1103,11 +1103,16 @@ const GALLERY: GalleryItem[] = [
   {
     id: 'ktx-helper',
     title: 'KTX 자동 예매 도우미',
-    subtitle: 'KTX 빈자리 자동 감지·예매 확장',
-    url: 'Chrome Extension',
+    subtitle: 'KTX 빈자리 자동 감지·예매 Chrome 확장',
+    url: 'letskorail.com · 자동 예매 도우미',
     liveUrl: null,
     tags: ['Chrome MV3', 'MutationObserver'],
-    shots: [],
+    shots: [
+      { src: '/projects/ktx-full.png', label: '전체 — KTX 예매 화면 + 자동 예매 도우미' },
+      { src: '/projects/ktx-settings.png', label: '탑승 시간대 설정 + 예약 컨트롤' },
+      { src: '/projects/ktx-done.png', label: '조건 부합 시 자동 예약 완료' },
+      { src: '/projects/ktx-payment.png', label: '예약 성공 → 결제 대기' },
+    ],
   },
 ];
 
