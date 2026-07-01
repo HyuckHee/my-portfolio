@@ -1097,6 +1097,7 @@ const GALLERY: GalleryItem[] = [
     tags: ['Next.js 15', 'NestJS', 'Playwright'],
     shots: [
       { src: '/projects/pcpricetrack-deals.png', label: '특가 — 실시간 가격 인하 추적' },
+      { src: '/projects/pcpricetrack-build.png', label: '조립 PC 견적 — 용도·예산 기반 부품 구성' },
       { src: '/projects/pcpricetrack-home.png', label: '홈 — 국내외 최저가 비교' },
     ],
   },
