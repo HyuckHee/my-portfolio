@@ -121,7 +121,7 @@ function ScrollArrows({ canScrollLeft, canScrollRight, onScroll }: {
         className={`w-8 h-8 rounded border flex items-center justify-center transition-colors font-mono text-sm
           ${canScrollLeft
             ? 'border-[#333] text-[#888] hover:border-[#00ff41]/50 hover:text-[#00ff41] cursor-pointer'
-            : 'border-[#1a1a1a] text-[#333] cursor-not-allowed'}`}
+            : 'border-[#2a2a2a] text-[#333] cursor-not-allowed'}`}
         aria-label="이전"
       >
         {'<'}
@@ -132,7 +132,7 @@ function ScrollArrows({ canScrollLeft, canScrollRight, onScroll }: {
         className={`w-8 h-8 rounded border flex items-center justify-center transition-colors font-mono text-sm
           ${canScrollRight
             ? 'border-[#333] text-[#888] hover:border-[#00ff41]/50 hover:text-[#00ff41] cursor-pointer'
-            : 'border-[#1a1a1a] text-[#333] cursor-not-allowed'}`}
+            : 'border-[#2a2a2a] text-[#333] cursor-not-allowed'}`}
         aria-label="다음"
       >
         {'>'}
@@ -182,8 +182,8 @@ function useTyping(text: string, speed = 50, delay = 300) {
 /* ─── Terminal Window Chrome ─── */
 function TerminalWindow({ title, children, className = '' }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-[#0d0d0d] border border-[#1a1a1a] rounded-lg overflow-hidden ${className}`}>
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#111] border-b border-[#1a1a1a]">
+    <div className={`bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg overflow-hidden ${className}`}>
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1f1f1f] border-b border-[#2a2a2a]">
         <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
         <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
         <span className="w-3 h-3 rounded-full bg-[#28c840]" />
@@ -610,7 +610,7 @@ function Navbar() {
     return () => window.removeEventListener('scroll', h);
   }, []);
   return (
-    <nav className={`fixed top-0 inset-x-0 z-50 transition-all font-mono ${scrolled ? 'bg-[#0a0a0a]/90 backdrop-blur-lg border-b border-[#1a1a1a]' : ''}`}>
+    <nav className={`fixed top-0 inset-x-0 z-50 transition-all font-mono ${scrolled ? 'bg-[#181818]/90 backdrop-blur-lg border-b border-[#2a2a2a]' : ''}`}>
       <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
         <a href="#" className="text-sm font-bold tracking-tight text-[#00ff41]">
           ~/hyuckhee.dev
@@ -691,11 +691,11 @@ function Hero() {
             </div>
 
             {/* KPI Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-6 pt-4 border-t border-[#1a1a1a]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-6 pt-4 border-t border-[#2a2a2a]">
               {HERO_STATS.map((stat) => (
                 <div
                   key={stat.label}
-                  className="bg-[#080808] border border-[#1a1a1a] rounded px-3 py-3 hover:border-[#00ff41]/30 transition-colors"
+                  className="bg-[#151515] border border-[#2a2a2a] rounded px-3 py-3 hover:border-[#00ff41]/30 transition-colors"
                 >
                   <div className="flex items-baseline gap-1">
                     <span className="text-2xl sm:text-3xl font-bold text-[#00ff41] font-mono leading-none">{stat.value}</span>
@@ -707,7 +707,7 @@ function Hero() {
             </div>
 
             {/* Description */}
-            <div className="mt-4 pt-3 border-t border-[#1a1a1a]">
+            <div className="mt-4 pt-3 border-t border-[#2a2a2a]">
               <p className="text-[#888] text-sm leading-relaxed font-sans">
                 4년간 <span className="text-[#00ff41]">삼성화재 보험 서비스</span>, <span className="text-[#00ff41]">CJ 제조 시스템</span>을 개발하며
                 레거시 개선부터 신규 서비스 구축까지 경험했습니다.
@@ -729,7 +729,7 @@ function Hero() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="GitHub"
-                  className="w-9 h-9 flex items-center justify-center border border-[#222] hover:border-[#00ff41]/50 text-[#666] hover:text-[#00ff41] rounded transition-colors"
+                  className="w-9 h-9 flex items-center justify-center border border-[#363636] hover:border-[#00ff41]/50 text-[#666] hover:text-[#00ff41] rounded transition-colors"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z" />
@@ -738,7 +738,7 @@ function Hero() {
                 <a
                   href="mailto:leehh4864@gmail.com"
                   aria-label="Email"
-                  className="w-9 h-9 flex items-center justify-center border border-[#222] hover:border-[#00ff41]/50 text-[#666] hover:text-[#00ff41] rounded transition-colors"
+                  className="w-9 h-9 flex items-center justify-center border border-[#363636] hover:border-[#00ff41]/50 text-[#666] hover:text-[#00ff41] rounded transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -795,7 +795,7 @@ function About() {
             {DIFFERENTIATORS.map((item) => (
               <div
                 key={item.title}
-                className="group relative bg-[#0d0d0d] border border-[#1a1a1a] hover:border-[#00ff41]/40 rounded-lg p-4 transition-all hover:-translate-y-0.5"
+                className="group relative bg-[#1c1c1c] border border-[#2a2a2a] hover:border-[#00ff41]/40 rounded-lg p-4 transition-all hover:-translate-y-0.5"
               >
                 <div className="absolute top-2 right-3 text-2xl text-[#00ff41]/20 group-hover:text-[#00ff41]/40 font-mono transition-colors">
                   {item.icon}
@@ -849,7 +849,7 @@ function Experience() {
   const ref = useFadeIn();
   const { scrollRef: expScrollRef, canScrollLeft: expLeft, canScrollRight: expRight, scrollBy: expScroll } = useHorizontalScroll();
   return (
-    <section id="experience" ref={ref} className="fade-section py-24 bg-[#0d0d0d]/50">
+    <section id="experience" ref={ref} className="fade-section py-24 bg-[#1c1c1c]/50">
       <div className="max-w-5xl mx-auto px-6 flex items-end justify-between mb-8">
         <h2 className="text-2xl font-bold font-mono flex items-center gap-2">
           <span className="text-[#00ff41]">#</span> Experience
@@ -867,7 +867,7 @@ function Experience() {
                     <span className="text-[#555]">period:</span> {exp.period}
                   </div>
                   {exp.items.map((item, i) => (
-                    <div key={i} className="border border-[#1a1a1a] rounded-lg p-3 bg-[#080808]">
+                    <div key={i} className="border border-[#2a2a2a] rounded-lg p-3 bg-[#151515]">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
                           <h4 className="text-[#ccc] font-mono text-xs font-semibold mb-1">{item.title}</h4>
@@ -876,7 +876,7 @@ function Experience() {
                           <p className="text-[#444] font-mono text-[10px] mt-1.5">env: {item.env}</p>
                         </div>
                         {item.projectId && (
-                          <a href={`#${item.projectId}`} className="shrink-0 text-[10px] font-mono bg-[#111] border border-[#222] hover:border-[#00ff41]/30 text-[#555] hover:text-[#00ff41] px-2 py-1 rounded transition-colors">
+                          <a href={`#${item.projectId}`} className="shrink-0 text-[10px] font-mono bg-[#1f1f1f] border border-[#363636] hover:border-[#00ff41]/30 text-[#555] hover:text-[#00ff41] px-2 py-1 rounded transition-colors">
                             goto →
                           </a>
                         )}
@@ -952,10 +952,10 @@ function ProjectGantt() {
                     {project.title}
                   </span>
                 </div>
-                <div className="flex-1 relative h-7 bg-[#111] rounded border border-[#1a1a1a]">
+                <div className="flex-1 relative h-7 bg-[#1f1f1f] rounded border border-[#2a2a2a]">
                   {years.map((y) => {
                     const pos = ((y - rangeStart.getFullYear()) * 12 - rangeStart.getMonth()) / totalMonths * 100;
-                    return <div key={y} className="absolute top-0 bottom-0 w-px bg-[#1a1a1a]" style={{ left: `${pos}%` }} />;
+                    return <div key={y} className="absolute top-0 bottom-0 w-px bg-[#2a2a2a]" style={{ left: `${pos}%` }} />;
                   })}
                   <div
                     className={`absolute top-1 bottom-1 rounded ${color} opacity-70 group-hover:opacity-100 transition-opacity flex items-center overflow-visible`}
@@ -991,7 +991,7 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <h3 className="text-lg sm:text-xl font-bold font-mono text-[#ccc]">{project.title}</h3>
             {project.company ? (
-              <span className="text-[10px] font-mono bg-[#111] text-[#555] border border-[#222] px-2 py-0.5 rounded">{project.role}</span>
+              <span className="text-[10px] font-mono bg-[#1f1f1f] text-[#555] border border-[#363636] px-2 py-0.5 rounded">{project.role}</span>
             ) : (
               <span className="text-[10px] font-mono bg-[#00ff41]/10 text-[#00ff41] border border-[#00ff41]/20 px-2 py-0.5 rounded">personal</span>
             )}
@@ -1003,14 +1003,14 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
           <div className="flex flex-wrap gap-2">
             {project.liveUrl && (
               <a href={project.liveUrl} target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-[#080808] border border-[#1a1a1a] hover:border-[#00ff41]/30 text-[#555] hover:text-[#00ff41] px-2.5 py-1 rounded transition-colors">
+                className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-[#151515] border border-[#2a2a2a] hover:border-[#00ff41]/30 text-[#555] hover:text-[#00ff41] px-2.5 py-1 rounded transition-colors">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] animate-pulse" />
                 {new URL(project.liveUrl).hostname}
               </a>
             )}
             {project.githubUrl && (
               <a href={project.githubUrl} target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-[#080808] border border-[#1a1a1a] hover:border-[#333] text-[#555] hover:text-[#ccc] px-2.5 py-1 rounded transition-colors">
+                className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-[#151515] border border-[#2a2a2a] hover:border-[#333] text-[#555] hover:text-[#ccc] px-2.5 py-1 rounded transition-colors">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
                 github
               </a>
@@ -1048,7 +1048,7 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
         {project.highlights && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
             {project.highlights.map((h) => (
-              <div key={h.label} className="bg-[#080808] border border-[#1a1a1a] rounded px-3 py-2">
+              <div key={h.label} className="bg-[#151515] border border-[#2a2a2a] rounded px-3 py-2">
                 <div className="text-[10px] font-mono text-[#444]">{h.label}</div>
                 <div className="text-xs font-mono text-[#aaa]">{h.value}</div>
               </div>
@@ -1058,7 +1058,7 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
 
         {/* Architecture Diagram */}
         {project.diagram && (
-          <div className="mt-4 bg-[#080808] border border-[#1a1a1a] rounded p-4 overflow-x-auto">
+          <div className="mt-4 bg-[#151515] border border-[#2a2a2a] rounded p-4 overflow-x-auto">
             <div className="text-[10px] font-mono text-[#444] mb-2">// architecture</div>
             <pre className="text-[11px] sm:text-xs font-mono text-[#00ff41]/70 leading-relaxed whitespace-pre">{project.diagram}</pre>
           </div>
@@ -1067,7 +1067,7 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mt-4">
           {project.tags.map((t) => (
-            <span key={t} className="text-[10px] font-mono bg-[#0a0a0a] text-[#555] px-2 py-0.5 rounded border border-[#1a1a1a]">{t}</span>
+            <span key={t} className="text-[10px] font-mono bg-[#181818] text-[#555] px-2 py-0.5 rounded border border-[#2a2a2a]">{t}</span>
           ))}
         </div>
       </TerminalWindow>
@@ -1153,14 +1153,14 @@ function Lightbox({ item, index, onClose, onNav }: {
         </button>
       </div>
 
-      <div className="relative w-full max-w-5xl bg-[#0d0d0d] border border-[#222] rounded-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-1.5 px-3 py-2 bg-[#141414] border-b border-[#222]">
+      <div className="relative w-full max-w-5xl bg-[#1c1c1c] border border-[#363636] rounded-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-1.5 px-3 py-2 bg-[#232323] border-b border-[#363636]">
           <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
           <span className="ml-2 text-[10px] font-mono text-[#666] truncate">{item.url}</span>
         </div>
-        <img src={shot.src} alt={`${item.title} — ${shot.label}`} className="w-full block max-h-[70vh] object-contain bg-[#0a0a0a]" />
+        <img src={shot.src} alt={`${item.title} — ${shot.label}`} className="w-full block max-h-[70vh] object-contain bg-[#181818]" />
 
         {multi && (
           <>
@@ -1186,9 +1186,9 @@ function Lightbox({ item, index, onClose, onNav }: {
 function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }) {
   const hasShots = item.shots.length > 0;
   return (
-    <div className="group bg-[#0d0d0d] border border-[#1a1a1a] hover:border-[#00ff41]/40 rounded-xl overflow-hidden transition-all hover:-translate-y-1">
+    <div className="group bg-[#1c1c1c] border border-[#2a2a2a] hover:border-[#00ff41]/40 rounded-xl overflow-hidden transition-all hover:-translate-y-1">
       {/* Browser chrome */}
-      <div className="flex items-center gap-1.5 px-3 py-2.5 bg-[#141414] border-b border-[#1a1a1a]">
+      <div className="flex items-center gap-1.5 px-3 py-2.5 bg-[#232323] border-b border-[#2a2a2a]">
         <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
         <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
         <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
@@ -1199,7 +1199,7 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }
       {hasShots ? (
         <button
           onClick={onOpen}
-          className="relative block w-full aspect-[16/10] overflow-hidden bg-[#0a0a0a] cursor-zoom-in"
+          className="relative block w-full aspect-[16/10] overflow-hidden bg-[#181818] cursor-zoom-in"
           aria-label={`${item.title} 스크린샷 크게 보기`}
         >
           <img
@@ -1215,14 +1215,14 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }
           </span>
         </button>
       ) : (
-        <div className="relative w-full aspect-[16/10] bg-[#0a0a0a] p-3 flex flex-col">
+        <div className="relative w-full aspect-[16/10] bg-[#181818] p-3 flex flex-col">
           <div className="text-[10px] font-mono text-[#888] mb-2">서울 → 부산 · 자동 탐색</div>
           <div className="grid grid-cols-4 gap-1.5 mb-2">
             {['매진', '예약', '매진', '매진'].map((s, i) => (
-              <div key={i} className={`text-center text-[9px] font-mono rounded py-1.5 border ${s === '예약' ? 'bg-[#00ff41]/15 border-[#00ff41]/40 text-[#00ff41]' : 'bg-[#111] border-[#222] text-[#555]'}`}>{s}</div>
+              <div key={i} className={`text-center text-[9px] font-mono rounded py-1.5 border ${s === '예약' ? 'bg-[#00ff41]/15 border-[#00ff41]/40 text-[#00ff41]' : 'bg-[#1f1f1f] border-[#363636] text-[#555]'}`}>{s}</div>
             ))}
           </div>
-          <div className="mt-auto flex items-center gap-2 bg-[#141414] border border-[#00ff41]/40 rounded-lg px-2.5 py-2">
+          <div className="mt-auto flex items-center gap-2 bg-[#232323] border border-[#00ff41]/40 rounded-lg px-2.5 py-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] animate-pulse" />
             <span className="text-[10px] font-mono text-[#ccc]">자동 탐색 중… 5초 간격</span>
             <span className="ml-auto text-[10px] font-mono text-[#00ff41]">●REC</span>
@@ -1232,7 +1232,7 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }
       )}
 
       {/* Caption */}
-      <div className="p-4 border-t border-[#1a1a1a]">
+      <div className="p-4 border-t border-[#2a2a2a]">
         <div className="flex items-center gap-2 mb-1.5">
           <h4 className="text-sm font-mono font-semibold text-[#eee]">{item.title}</h4>
           <span className="text-[9px] font-mono text-[#00ff41] bg-[#00ff41]/10 border border-[#00ff41]/20 px-1.5 py-0.5 rounded">personal</span>
@@ -1246,7 +1246,7 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }
         <p className="text-[11px] text-[#888] font-sans mb-2.5 leading-relaxed">{item.subtitle}</p>
         <div className="flex flex-wrap gap-1.5">
           {item.tags.map((t) => (
-            <span key={t} className="text-[9px] font-mono text-[#666] border border-[#222] rounded px-1.5 py-0.5">{t}</span>
+            <span key={t} className="text-[9px] font-mono text-[#666] border border-[#363636] rounded px-1.5 py-0.5">{t}</span>
           ))}
         </div>
       </div>
@@ -1323,7 +1323,7 @@ function Projects() {
 function Skills() {
   const ref = useFadeIn();
   return (
-    <section id="skills" ref={ref} className="fade-section py-24 bg-[#0d0d0d]/50">
+    <section id="skills" ref={ref} className="fade-section py-24 bg-[#1c1c1c]/50">
       <div className="max-w-5xl mx-auto px-6">
         <h2 className="text-2xl font-bold font-mono mb-8 flex items-center gap-2">
           <span className="text-[#00ff41]">#</span> Skills
@@ -1338,7 +1338,7 @@ function Skills() {
               <div className="flex flex-wrap gap-3">
                 {group.skills.map((skill) => (
                   <div key={skill.name}
-                    className="flex items-center gap-2.5 bg-[#0d0d0d] border border-[#1a1a1a] hover:border-[#00ff41]/30 rounded px-3 py-2 transition-colors group cursor-default">
+                    className="flex items-center gap-2.5 bg-[#1c1c1c] border border-[#2a2a2a] hover:border-[#00ff41]/30 rounded px-3 py-2 transition-colors group cursor-default">
                     <img
                       src={skill.icon}
                       alt={skill.name}
@@ -1405,7 +1405,7 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="border-t border-[#1a1a1a] py-6">
+    <footer className="border-t border-[#2a2a2a] py-6">
       <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-[#333]">
         <span>&copy; {new Date().getFullYear()} 이혁희 // All rights reserved</span>
         <span>built with React + Vite + Tailwind CSS</span>

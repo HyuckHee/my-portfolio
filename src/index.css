@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply bg-[#0a0a0a] text-gray-100 antialiased;
+  @apply bg-[#181818] text-gray-100 antialiased;
 }
 
 ::selection {
