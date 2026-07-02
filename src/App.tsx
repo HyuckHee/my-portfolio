@@ -371,14 +371,16 @@ const PROJECTS = [
     desc: '삼성화재 다이렉트착 앱과 보험 계약관리, 자동차 보험 관련 서비스의 프론트엔드 운영을 담당했습니다.',
     solution: [
       '다이렉트착 앱과 보험 계약관리, 자동차 보험 서비스 프론트엔드 운영',
-      '실서비스 환경에서 화면 유지보수와 기능 개선',
+      '기획 요건에 따른 계약관리 화면 수정·개선 대응',
+      '약 15개 화면의 React→Vue 점진적 마이그레이션 수행',
       '보험 도메인 특성에 맞는 정확도 높은 UI 개발',
     ],
-    result: '서비스 운영 안정성을 유지하며 사용자 경험 개선에 기여.',
+    result: '실서비스 운영 안정성을 유지하면서 약 15개 화면을 React에서 Vue로 전환 완료.',
     tags: ['JavaScript', 'React', 'Vue'],
     highlights: [
       { label: '기간', value: '1년 2개월' },
       { label: '역할', value: '프론트엔드 운영 및 기능 개선' },
+      { label: '전환', value: 'React→Vue 15개 화면' },
       { label: '도메인', value: '자동차보험 / 장기계약 / 계약관리' },
     ],
     diagram: `┌─────────────────────────────────────┐
@@ -388,7 +390,7 @@ const PROJECTS = [
 │ 보험     │ 보험     │               │
 ├──────────┴──────────┴───────────────┤
 │  Frontend: React + Vue              │
-│  Vue → React 점진적 마이그레이션     │
+│  React → Vue 점진적 전환 (15개 화면) │
 ├─────────────────────────────────────┤
 │  API Gateway / Backend              │
 └─────────────────────────────────────┘`,
@@ -665,7 +667,7 @@ const HERO_STATS = [
   { value: '3.5+', label: 'years', sub: '만 3년 7개월 실무' },
   { value: '7+', label: 'projects', sub: '엔터프라이즈 + 개인' },
   { value: '2', label: 'domains', sub: '제조 / 보험' },
-  { value: '2', label: 'migrations', sub: 'jQuery·Vue → React' },
+  { value: '2', label: 'migrations', sub: 'jQuery→React · React→Vue' },
 ];
 
 function Hero() {
@@ -794,12 +796,12 @@ const DIFFERENTIATORS = [
   {
     icon: '⟷',
     title: 'React + Vue 듀얼',
-    desc: '두 프레임워크를 실무에서 모두 운영. Vue→React 마이그레이션을 직접 수행하며 양쪽의 차이와 전환 전략을 체득.',
+    desc: '두 프레임워크를 실무에서 모두 운영. React→Vue 마이그레이션(15개 화면)을 직접 수행하며 양쪽의 차이와 전환 전략을 체득.',
   },
   {
     icon: '↻',
     title: '레거시 → 모던 전환',
-    desc: 'jQuery→React, Vue→React 두 차례의 대규모 마이그레이션 경험. 점진적 전환 전략을 수립할 수 있는 실무 감각.',
+    desc: 'jQuery→React 레거시 현대화, React→Vue 프레임워크 전환 — 두 차례의 마이그레이션 경험. 점진적 전환 전략을 수립할 수 있는 실무 감각.',
   },
   {
     icon: '⌘',
@@ -859,7 +861,7 @@ function About() {
               </p>
               <p>
                 <span className="text-[#ccc]">삼성화재</span>에서는 다이렉트 보험 서비스의 프론트엔드를 담당하며
-                대규모 사용자 대상 서비스 운영 경험과 Vue→React 마이그레이션 경험을 쌓았습니다.
+                대규모 사용자 대상 서비스 운영 경험과 함께 약 15개 화면의 React→Vue 마이그레이션을 수행했습니다.
               </p>
               <p>
                 2025년 프로젝트 종료 후에는 <span className="text-[#ccc]">방송통신대학교 컴퓨터과학과</span> 학위를
