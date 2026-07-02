@@ -587,6 +587,17 @@ const SKILL_GROUPS = [
   },
 ];
 
+/* ─── Gantt Extras (프로젝트 외 타임라인 행) ─── */
+const TIMELINE_EXTRAS = [
+  {
+    id: 'timeline-degree',
+    title: '방통대 졸업 · 스택 학습',
+    period: { start: '2025-02', end: '2026-02' as string | null },
+    href: '#about',
+    color: 'bg-green-200',
+  },
+];
+
 /* ─── Gantt Colors ─── */
 const GANTT_COLOR: Record<string, string> = {
   'project-haccp-hwayo':  'bg-green-500',
@@ -815,7 +826,6 @@ function About() {
               <p className="text-[#555] font-mono text-xs">/* 경력 요약 */</p>
               <p>
                 동서울대학교 기계자동차과를 졸업하고, 개발자로의 전환을 위해 비트캠프에서 Java 기반 웹앱 개발 과정을 수료했습니다.
-                이후 방송통신대학교 컴퓨터과학과를 졸업하며 CS 기초를 다졌습니다.
               </p>
               <p>
                 <span className="text-[#ccc]">크로니즈 시스템</span>에서 2년 반 동안 CJ올리브네트웍스 파견으로
@@ -824,6 +834,11 @@ function About() {
               <p>
                 <span className="text-[#ccc]">삼성화재</span>에서는 다이렉트 보험 서비스의 프론트엔드를 담당하며
                 대규모 사용자 대상 서비스 운영 경험과 Vue→React 마이그레이션 경험을 쌓았습니다.
+              </p>
+              <p>
+                2025년 프로젝트 종료 후에는 <span className="text-[#ccc]">방송통신대학교 컴퓨터과학과</span> 학위를
+                마무리하며(2026.02 졸업) CS 기초를 보강했고, 파견 개발에서는 경험하기 어려웠던 설계·인프라 의사결정을
+                채우기 위해 Next.js·NestJS 기반 서비스를 설계부터 배포·운영까지 직접 완주했습니다.
               </p>
             </div>
           </TerminalWindow>
@@ -834,7 +849,7 @@ function About() {
               {'  '}<span className="text-[#00ff41]">"경력"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"4년차 풀스택 개발자"</span><span className="text-[#555]">,</span>{'\n'}
               {'  '}<span className="text-[#00ff41]">"강점"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"React/Vue 듀얼 프레임워크"</span><span className="text-[#555]">,</span>{'\n'}
               {'  '}<span className="text-[#00ff41]">"특기"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"레거시 → 모던 스택 전환"</span><span className="text-[#555]">,</span>{'\n'}
-              {'  '}<span className="text-[#00ff41]">"학력"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"방송통신대 컴퓨터과학과"</span><span className="text-[#555]">,</span>{'\n'}
+              {'  '}<span className="text-[#00ff41]">"학력"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"방송통신대 컴퓨터과학과 (2026.02 졸업)"</span><span className="text-[#555]">,</span>{'\n'}
               {'  '}<span className="text-[#00ff41]">"교육"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"비트캠프 Java 웹앱 (2020)"</span>{'\n'}
               <span className="text-[#555]">{'}'}</span>
             </pre>
@@ -916,7 +931,16 @@ function ProjectGantt() {
 
   const nowStr = (() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`; })();
   const years = [2021, 2022, 2023, 2024, 2025, 2026];
-  const sorted = [...PROJECTS].sort((a, b) => a.period.start.localeCompare(b.period.start));
+  const rows = [
+    ...PROJECTS.map((p) => ({
+      id: p.id,
+      title: p.title,
+      period: p.period,
+      href: `#${p.id}`,
+      color: GANTT_COLOR[p.id] ?? 'bg-[#333]',
+    })),
+    ...TIMELINE_EXTRAS,
+  ].sort((a, b) => a.period.start.localeCompare(b.period.start));
 
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>} className="fade-section mb-8">
@@ -933,23 +957,23 @@ function ProjectGantt() {
         </div>
 
         <div className="space-y-2">
-          {sorted.map((project) => {
-            const endStr = project.period.end ?? nowStr;
-            const left  = toPercent(project.period.start);
+          {rows.map((row) => {
+            const endStr = row.period.end ?? nowStr;
+            const left  = toPercent(row.period.start);
             const right = toPercent(endStr);
             const width = right - left;
-            const color = GANTT_COLOR[project.id] ?? 'bg-[#333]';
-            const isOngoing = !project.period.end;
+            const color = row.color;
+            const isOngoing = !row.period.end;
 
-            const [sy, sm] = project.period.start.split('-');
+            const [sy, sm] = row.period.start.split('-');
             const [ey, em] = endStr.split('-');
             const label = isOngoing ? `${sy}.${sm} ~ 진행 중` : `${sy}.${sm} - ${ey}.${em}`;
 
             return (
-              <a key={project.id} href={`#${project.id}`} className="flex items-center gap-3 group">
+              <a key={row.id} href={row.href} className="flex items-center gap-3 group">
                 <div className="w-[108px] sm:w-[156px] shrink-0 text-right pr-3">
                   <span className="text-[10px] sm:text-xs font-mono text-[#555] group-hover:text-[#00ff41] leading-tight block transition-colors">
-                    {project.title}
+                    {row.title}
                   </span>
                 </div>
                 <div className="flex-1 relative h-7 bg-[#1f1f1f] rounded border border-[#2a2a2a]">
