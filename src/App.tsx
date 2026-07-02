@@ -1295,15 +1295,15 @@ function Projects() {
   return (
     <section id="projects" className="py-24">
       <div className="max-w-5xl mx-auto px-6">
-        <div className="flex items-end justify-between mb-8">
-          <h2 className="text-2xl font-bold font-mono flex items-center gap-2">
-            <span className="text-[#00ff41]">#</span> Projects
-            <span className="text-[#333] text-sm font-normal ml-2">// 프로젝트</span>
-          </h2>
-          <ScrollArrows canScrollLeft={projLeft} canScrollRight={projRight} onScroll={projScroll} />
-        </div>
+        <h2 className="text-2xl font-bold font-mono flex items-center gap-2 mb-8">
+          <span className="text-[#00ff41]">#</span> Projects
+          <span className="text-[#333] text-sm font-normal ml-2">// 프로젝트</span>
+        </h2>
         <ProjectGallery />
         <ProjectGantt />
+        <div className="flex justify-end mb-3">
+          <ScrollArrows canScrollLeft={projLeft} canScrollRight={projRight} onScroll={projScroll} />
+        </div>
       </div>
       <div className="pl-6 sm:pl-[max(1.5rem,calc((100vw-64rem)/2+1.5rem))]">
         <div ref={projScrollRef} className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
