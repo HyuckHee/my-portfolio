@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>바닐라 JS 슈팅 게임</title>
+    <style>
+        :root {
+            --animation-duration: 300ms;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #181818;
+            min-height: 100%;
+            overflow: hidden;
+        }
+        #App {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+        }
+        .game-scale {
+            transform-origin: top center;
+        }
+        .main_frame {
+            display: flex;
+            flex-direction: column;
+            width: 700px;
+            border-radius: 20px;
+            background: linear-gradient(145deg, #ECECEC, #F2F2F2);
+            margin: 0 auto;
+        }
+        .shootingTop {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+        .score, .stage {
+            margin: 20px;
+            font-size: 20px;
+        }
+        .shootingImage {
+            width: 700px;
+            height: 550px;
+            background-image: url('img/shooting/shooting_bg.png');
+            margin: 0 auto;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: end;
+            position: relative;
+            border-radius: 0 0 20px 20px;
+            overflow: hidden;
+        }
+        .scoreDiv {
+            z-index: 100;
+            width: 35%;
+            cursor: default;
+            display: flex;
+            margin: -10px auto;
+            flex-direction: column;
+            align-items: center;
+        }
+        .startBtn {
+            z-index: 999;
+            border: 0;
+            background-color: transparent;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform var(--animation-duration) ease;
+        }
+        .startBtn:hover {
+            transform: scale(1.3);
+        }
+        .startImg {
+            width: 200px;
+        }
+        @keyframes enemy {
+            from { transform: rotate(2deg); }
+            to   { transform: rotate(-2deg); }
+        }
+        @keyframes die {
+            from { transform: scale(0.9); }
+            to   { transform: rotate(180deg); }
+        }
+        @keyframes hit {
+            from { transform: rotate(15deg); }
+            to   { transform: rotate(-15deg); }
+        }
+        .enemyImg {
+            -webkit-user-drag: none;
+            cursor: pointer;
+            animation: enemy 0.1s infinite;
+        }
+        .enemyImg:hover { transform: scale(1.1); }
+        .enemyImg:active { animation: die 0.1s ease; }
+        .bossImg {
+            -webkit-user-drag: none;
+            cursor: pointer;
+            animation: hit 0.08s infinite;
+        }
+        .bossImg:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+    <div id="App">
+        <div class="game-scale">
+            <div class="gameContainer"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import Shooting from './Shooting.js';
+        new Shooting(document.querySelector('.gameContainer'));
+
+        // 700x640 고정 게임을 화면(iframe) 크기에 맞춰 축소
+        const fit = () => {
+            const scale = Math.min(1, (window.innerWidth - 16) / 700, (window.innerHeight - 24) / 640);
+            document.querySelector('.game-scale').style.transform = `scale(${scale})`;
+        };
+        fit();
+        window.addEventListener('resize', fit);
+    </script>
+</body>
+</html>

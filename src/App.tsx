@@ -595,9 +595,9 @@ const SKILL_GROUPS = [
 const TIMELINE_EXTRAS = [
   {
     id: 'timeline-vanilla-games',
-    title: '바닐라 JS 미니게임',
+    title: '바닐라 JS 슈팅 게임',
     period: { start: '2023-06', end: '2023-08' as string | null },
-    href: '#projects',
+    href: '#game',
     color: 'bg-green-200',
   },
   {
@@ -1176,19 +1176,6 @@ const GALLERY: GalleryItem[] = [
       { src: '/projects/ktx-payment.png', label: '예약 성공 → 결제 대기' },
     ],
   },
-  {
-    id: 'vanilla-games',
-    title: '바닐라 JS 미니게임 3종',
-    subtitle: '프레임워크 없이 순수 JS로 만든 게임 모음 — 기본기를 다지기 위해 Canvas 렌더링, DOM 이벤트, ES 모듈 구조를 직접 다뤘습니다.',
-    url: 'hyuckhee.github.io',
-    liveUrl: 'https://hyuckhee.github.io',
-    tags: ['Vanilla JS', 'Canvas', 'ES Modules'],
-    shots: [
-      { src: '/projects/game-shooting.png', label: 'Canvas 슈팅 게임 — 스프라이트·충돌 판정' },
-      { src: '/projects/game-clicker.png', label: 'Idle 클리커 — 점수·레벨 상태 관리' },
-      { src: '/projects/game-shopping.png', label: '미니 쇼핑 — 카테고리·색상 필터링' },
-    ],
-  },
 ];
 
 /* ─── Lightbox ─── */
@@ -1328,6 +1315,43 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }
   );
 }
 
+/* ─── Shooting Game Modal ─── */
+function GameModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', h);
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', h); document.body.style.overflow = ''; };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div className="w-full max-w-3xl bg-[#1c1c1c] border border-[#363636] rounded-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-1.5 px-3 py-2 bg-[#232323] border-b border-[#363636]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+          <span className="ml-2 text-[10px] font-mono text-[#666] truncate">./play shooting-game</span>
+          <button onClick={onClose} aria-label="닫기" className="ml-auto w-7 h-7 flex items-center justify-center border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] rounded transition-colors shrink-0">
+            ✕
+          </button>
+        </div>
+        <iframe src="/game/index.html" title="바닐라 JS 슈팅 게임" className="w-full h-[70vh] max-h-[680px] block bg-[#181818] border-0" />
+        <div className="px-4 py-2.5 border-t border-[#2a2a2a] flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono text-[#555]">
+          <span>적이 사라지기 전에 클릭 · 보스는 5번 맞혀야 다음 레벨</span>
+          <a href="https://github.com/HyuckHee/HyuckHee.github.io" target="_blank" rel="noreferrer" className="ml-auto hover:text-[#00ff41] transition-colors">
+            소스 보기 →
+          </a>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 /* ─── Gallery Section ─── */
 function ProjectGallery() {
   const ref = useFadeIn();
@@ -1366,6 +1390,7 @@ function ProjectGallery() {
 
 function Projects() {
   const { scrollRef: projScrollRef, canScrollLeft: projLeft, canScrollRight: projRight, scrollBy: projScroll } = useHorizontalScroll();
+  const [gameOpen, setGameOpen] = useState(false);
   return (
     <section id="projects" className="py-24">
       <div className="max-w-5xl mx-auto px-6">
@@ -1389,6 +1414,28 @@ function Projects() {
           <div className="min-w-6 shrink-0" />
         </div>
       </div>
+      <div id="game" className="max-w-5xl mx-auto px-6 mt-12 scroll-mt-20">
+        <TerminalWindow title="shooting-game — vanilla js (2023)">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="font-mono text-xs text-[#00ff41] mb-1.5">
+                <span className="text-[#333]">$</span> ./play shooting-game
+              </div>
+              <p className="text-[#888] text-sm leading-relaxed font-sans">
+                프레임워크 없이 바닐라 JS로 만든 슈팅 게임 — requestAnimationFrame 루프와 DOM 이벤트만으로 구현했습니다.
+                적이 사라지기 전에 클릭하세요.
+              </p>
+            </div>
+            <button
+              onClick={() => setGameOpen(true)}
+              className="shrink-0 bg-[#00ff41] hover:bg-[#00cc33] text-black px-5 py-2.5 rounded text-sm font-semibold font-mono transition-colors"
+            >
+              ▶ 게임해보기
+            </button>
+          </div>
+        </TerminalWindow>
+      </div>
+      {gameOpen && <GameModal onClose={() => setGameOpen(false)} />}
     </section>
   );
 }
