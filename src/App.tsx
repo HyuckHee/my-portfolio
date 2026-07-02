@@ -275,7 +275,7 @@ const PROJECTS = [
     company: null as string | null,
     role: '개인 프로젝트',
     liveUrl: 'https://pc-price-track-web.vercel.app/' as string | null,
-    githubUrl: 'https://github.com/HyuckHee' as string | null,
+    githubUrl: 'https://github.com/HyuckHee/PCPriceTrack' as string | null,
     desc: '국내외 PC 부품 가격을 비교하려면 여러 쇼핑몰을 직접 돌아다녀야 하고, 가격 변동 추이를 확인할 방법이 없었습니다.',
     solution: [
       'NestJS + Bull Queue 기반의 분산 크롤링 파이프라인 설계',
@@ -321,7 +321,7 @@ const PROJECTS = [
     company: null as string | null,
     role: '개인 프로젝트',
     liveUrl: null,
-    githubUrl: 'https://github.com/HyuckHee' as string | null,
+    githubUrl: 'https://github.com/HyuckHee/ktx-extension' as string | null,
     desc: 'KTX 인기 노선은 매진이 잦아 취소표를 잡으려면 수동으로 새로고침을 반복해야 합니다.',
     solution: [
       'Chrome Extension Manifest V3 기반 설계',
