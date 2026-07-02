@@ -373,8 +373,8 @@ const PROJECTS = [
       '다이렉트착 앱과 보험 계약관리, 자동차 보험 서비스 프론트엔드 운영',
       '기획 요건에 따른 계약관리 화면 수정·개선 대응',
       '약 15개 화면의 React→Vue 점진적 마이그레이션 수행',
-      '펫보험 등록 화면 개발 — VeeValidate 기반 폼 유효성 검증 적용',
-      '보험 도메인 특성에 맞는 정확도 높은 UI 개발',
+      '펫보험 등록 화면 개발 — VeeValidate 폼 검증, Vue 내장 반응형 상태로 단계별 폼 데이터 관리',
+      'Atomic Design(atoms·molecules·organisms) 컴포넌트 구조로 재사용성 확보',
     ],
     result: '실서비스 운영 안정성을 유지하면서 약 15개 화면을 React에서 Vue로 전환 완료.',
     tags: ['JavaScript', 'React', 'Vue', 'VeeValidate'],
@@ -392,6 +392,7 @@ const PROJECTS = [
 ├──────────┴──────────┴───────────────┤
 │  Frontend: React + Vue              │
 │  React → Vue 점진적 전환 (15개 화면) │
+│  Atomic Design 컴포넌트 구조         │
 ├─────────────────────────────────────┤
 │  API Gateway / Backend              │
 └─────────────────────────────────────┘`,
