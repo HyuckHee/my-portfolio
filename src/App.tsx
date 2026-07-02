@@ -285,7 +285,7 @@ const PROJECTS = [
       'Next.js App Router SSR + 인터랙티브 환율 전환',
     ],
     result: '6개 스토어에서 30분~2시간 주기로 가격 자동 수집, 30일 가격 히스토리 차트, 목표가 알림 기능 구현.',
-    note: 'Oracle Cloud 인스턴스 생성 자체 오류로 인해 완전 무료 스택으로 서버 전환 완료. Frontend(Vercel) · Backend API(Render) · DB(Supabase) · Redis(Upstash) · 크롤러(로컬 노트북) 구성으로 운영 비용 $0/월 달성.',
+    note: '클라우드 인프라 제약을 계기로 스택을 재설계 — Vercel(FE) · Render(API) · Supabase(DB) · Upstash(Redis) 조합으로 운영 비용 월 $0 달성. 무료 티어의 콜드 스타트·커넥션 제한을 고려해 서비스를 분리 배치했습니다.',
     tags: ['Next.js 15', 'NestJS', 'PostgreSQL', 'Drizzle ORM', 'Bull + Redis', 'Playwright', 'Tailwind CSS', 'Docker'],
     highlights: [
       { label: '아키텍처', value: 'Scheduler → Queue → Processor 3단 분리' },
@@ -615,13 +615,14 @@ const GANTT_COLOR: Record<string, string> = {
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', h, { passive: true });
     return () => window.removeEventListener('scroll', h);
   }, []);
   return (
-    <nav className={`fixed top-0 inset-x-0 z-50 transition-all font-mono ${scrolled ? 'bg-[#181818]/90 backdrop-blur-lg border-b border-[#2a2a2a]' : ''}`}>
+    <nav className={`fixed top-0 inset-x-0 z-50 transition-all font-mono ${scrolled || menuOpen ? 'bg-[#181818]/90 backdrop-blur-lg border-b border-[#2a2a2a]' : ''}`}>
       <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
         <a href="#" className="text-sm font-bold tracking-tight text-[#00ff41]">
           ~/hyuckhee.dev
@@ -633,7 +634,29 @@ function Navbar() {
             </a>
           ))}
         </div>
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label={menuOpen ? '메뉴 닫기' : '메뉴 열기'}
+          aria-expanded={menuOpen}
+          className="sm:hidden w-9 h-9 flex items-center justify-center border border-[#333] text-[#888] hover:border-[#00ff41]/50 hover:text-[#00ff41] rounded transition-colors"
+        >
+          {menuOpen ? '✕' : '☰'}
+        </button>
       </div>
+      {menuOpen && (
+        <div className="sm:hidden px-6 pb-4 flex flex-col">
+          {NAV_ITEMS.map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              onClick={() => setMenuOpen(false)}
+              className="py-2.5 text-sm text-[#888] hover:text-[#00ff41] border-b border-[#2a2a2a]/60 last:border-0 transition-colors"
+            >
+              <span className="text-[#444]">./</span>{item.toLowerCase()}
+            </a>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
@@ -733,6 +756,9 @@ function Hero() {
               </a>
               <a href="#contact" className="border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] px-5 py-2.5 rounded text-sm transition-colors">
                 cat contact.txt
+              </a>
+              <a href="/resume.pdf" download="이혁희_이력서.pdf" className="border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] px-5 py-2.5 rounded text-sm transition-colors">
+                wget resume.pdf
               </a>
               <div className="flex items-center gap-2 ml-auto">
                 <a
@@ -1061,9 +1087,9 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
             <p className="text-[#888] text-xs leading-relaxed font-sans">{project.result}</p>
           </div>
           {project.note && (
-            <div className="flex items-start gap-2 bg-[#1a1a00] border border-[#333300] rounded px-3 py-2.5 mt-2">
-              <span className="text-yellow-500 font-mono text-xs shrink-0">WARN:</span>
-              <p className="text-yellow-500/70 text-[11px] leading-relaxed font-sans">{project.note}</p>
+            <div className="flex items-start gap-2 bg-[#001a08] border border-[#00ff41]/15 rounded px-3 py-2.5 mt-2">
+              <span className="text-[#00ff41] font-mono text-xs shrink-0">// 비용 최적화</span>
+              <p className="text-[#00ff41]/60 text-[11px] leading-relaxed font-sans">{project.note}</p>
             </div>
           )}
         </div>
