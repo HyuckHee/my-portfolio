@@ -373,10 +373,11 @@ const PROJECTS = [
       '다이렉트착 앱과 보험 계약관리, 자동차 보험 서비스 프론트엔드 운영',
       '기획 요건에 따른 계약관리 화면 수정·개선 대응',
       '약 15개 화면의 React→Vue 점진적 마이그레이션 수행',
+      '펫보험 등록 화면 개발 — VeeValidate 기반 폼 유효성 검증 적용',
       '보험 도메인 특성에 맞는 정확도 높은 UI 개발',
     ],
     result: '실서비스 운영 안정성을 유지하면서 약 15개 화면을 React에서 Vue로 전환 완료.',
-    tags: ['JavaScript', 'React', 'Vue'],
+    tags: ['JavaScript', 'React', 'Vue', 'VeeValidate'],
     highlights: [
       { label: '기간', value: '1년 2개월' },
       { label: '역할', value: '프론트엔드 운영 및 기능 개선' },
