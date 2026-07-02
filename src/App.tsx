@@ -594,6 +594,13 @@ const SKILL_GROUPS = [
 /* ─── Gantt Extras (프로젝트 외 타임라인 행) ─── */
 const TIMELINE_EXTRAS = [
   {
+    id: 'timeline-vanilla-games',
+    title: '바닐라 JS 미니게임',
+    period: { start: '2023-06', end: '2023-08' as string | null },
+    href: '#projects',
+    color: 'bg-green-200',
+  },
+  {
     id: 'timeline-degree',
     title: '방통대 졸업 · 스택 학습',
     period: { start: '2025-02', end: '2026-02' as string | null },
@@ -1167,6 +1174,19 @@ const GALLERY: GalleryItem[] = [
       { src: '/projects/ktx-settings.png', label: '탑승 시간대 설정 + 예약 컨트롤' },
       { src: '/projects/ktx-done.png', label: '조건 부합 시 자동 예약 완료' },
       { src: '/projects/ktx-payment.png', label: '예약 성공 → 결제 대기' },
+    ],
+  },
+  {
+    id: 'vanilla-games',
+    title: '바닐라 JS 미니게임 3종',
+    subtitle: '프레임워크 없이 순수 JS로 만든 게임 모음 — 기본기를 다지기 위해 Canvas 렌더링, DOM 이벤트, ES 모듈 구조를 직접 다뤘습니다.',
+    url: 'hyuckhee.github.io',
+    liveUrl: 'https://hyuckhee.github.io',
+    tags: ['Vanilla JS', 'Canvas', 'ES Modules'],
+    shots: [
+      { src: '/projects/game-shooting.png', label: 'Canvas 슈팅 게임 — 스프라이트·충돌 판정' },
+      { src: '/projects/game-clicker.png', label: 'Idle 클리커 — 점수·레벨 상태 관리' },
+      { src: '/projects/game-shopping.png', label: '미니 쇼핑 — 카테고리·색상 필터링' },
     ],
   },
 ];
