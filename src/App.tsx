@@ -639,7 +639,7 @@ function Navbar() {
 }
 
 const HERO_STATS = [
-  { value: '4+', label: 'years', sub: '풀스택 경력' },
+  { value: '3.5+', label: 'years', sub: '만 3년 7개월 실무' },
   { value: '7+', label: 'projects', sub: '엔터프라이즈 + 개인' },
   { value: '2', label: 'domains', sub: '제조 / 보험' },
   { value: '2', label: 'migrations', sub: 'jQuery·Vue → React' },
@@ -720,7 +720,7 @@ function Hero() {
             {/* Description */}
             <div className="mt-4 pt-3 border-t border-[#2a2a2a]">
               <p className="text-[#888] text-sm leading-relaxed font-sans">
-                4년간 <span className="text-[#00ff41]">삼성화재 보험 서비스</span>, <span className="text-[#00ff41]">CJ 제조 시스템</span>을 개발하며
+                3년 반 동안 <span className="text-[#00ff41]">삼성화재 보험 서비스</span>, <span className="text-[#00ff41]">CJ 제조 시스템</span>을 개발하며
                 레거시 개선부터 신규 서비스 구축까지 경험했습니다.
                 <span className="text-[#ccc]"> React/Vue 듀얼 프레임워크</span> 역량으로 두 번의 대규모 마이그레이션을 성공적으로 수행했습니다.
               </p>
@@ -846,7 +846,7 @@ function About() {
           <TerminalWindow title="profile.json">
             <pre className="text-sm font-mono leading-relaxed">
               <span className="text-[#555]">{'{'}</span>{'\n'}
-              {'  '}<span className="text-[#00ff41]">"경력"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"4년차 풀스택 개발자"</span><span className="text-[#555]">,</span>{'\n'}
+              {'  '}<span className="text-[#00ff41]">"경력"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"풀스택 개발자 (만 3년 7개월)"</span><span className="text-[#555]">,</span>{'\n'}
               {'  '}<span className="text-[#00ff41]">"강점"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"React/Vue 듀얼 프레임워크"</span><span className="text-[#555]">,</span>{'\n'}
               {'  '}<span className="text-[#00ff41]">"특기"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"레거시 → 모던 스택 전환"</span><span className="text-[#555]">,</span>{'\n'}
               {'  '}<span className="text-[#00ff41]">"학력"</span><span className="text-[#555]">:</span> <span className="text-[#e5c07b]">"방송통신대 컴퓨터과학과 (2026.02 졸업)"</span><span className="text-[#555]">,</span>{'\n'}
