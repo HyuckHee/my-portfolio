@@ -314,6 +314,50 @@ const PROJECTS = [
               └─────────────────────────┘`,
   },
   {
+    id: 'project-shooting-2026',
+    title: '슈팅 게임 2026 리라이트',
+    subtitle: '2023 바닐라 JS 게임의 TypeScript + Canvas 재구축',
+    period: { start: '2026-07', end: null },
+    company: null as string | null,
+    role: '개인 프로젝트',
+    liveUrl: 'https://my-portfolio-hyuckhees-projects.vercel.app/game2026/index.html' as string | null,
+    githubUrl: 'https://github.com/HyuckHee/my-portfolio/tree/main/src/game' as string | null,
+    desc: '2023년 학습용으로 만든 슈팅 게임은 DOM 조작 중심 설계에 머물렀고, 랭킹 기능은 서버까지 만들다 주석으로 남았습니다. 3년 뒤의 시선으로 같은 게임을 다시 만들었습니다.',
+    solution: [
+      '고정 타임스텝 루프(누적기 + 렌더 보간) — 120Hz 모니터에서도 동일한 게임 속도 보장',
+      'TypeScript strict, 책임별 9개 모듈 분리 (루프·상태머신·엔티티·렌더러·파티클·오디오·입력·랭킹)',
+      'Canvas 2D 렌더링 — devicePixelRatio 대응, 오프스크린 틴트 합성으로 Safari 호환 확보',
+      '2023년 미완성으로 남았던 랭킹을 Supabase(RLS·CHECK 제약)로 완성 — 오락실식 이니셜 TOP 10',
+      '스테이지 진화(이동 적·보스 패턴 변화)·라이프·게임필(파티클·화면흔들림·WebAudio·터치)',
+    ],
+    result: '2023 원본과 토글로 비교 플레이 가능한 성장 쇼케이스. 번들 gzip 약 6KB, 방문자 참여형 TOP 10 랭킹 운영 중.',
+    tags: ['TypeScript', 'Canvas 2D', 'WebAudio', 'Supabase', 'Vite'],
+    highlights: [
+      { label: '아키텍처', value: '고정 타임스텝 + 상태머신' },
+      { label: '랭킹', value: 'Supabase RLS 오락실 TOP 10' },
+      { label: '호환', value: 'DPR · iOS 오디오 · 터치' },
+      { label: '서사', value: '2023 원본과 토글 비교' },
+    ],
+    diagram: `┌─────────── GameModal (React) ───────────┐
+│   2023 iframe      ↔      2026 iframe    │
+│  Vanilla JS · DOM      TS + Canvas 2D    │
+└───────────────────┬──────────────────────┘
+                    │
+     ┌──────────────▼───────────────┐
+     │  loop.ts — 고정 타임스텝 60Hz  │
+     │   ├─ state.ts    상태머신      │
+     │   ├─ entities.ts 규칙·스폰     │
+     │   ├─ renderer.ts Canvas·DPR   │
+     │   ├─ particles · effects      │
+     │   ├─ audio.ts   WebAudio      │
+     │   └─ input.ts   좌표 역변환    │
+     └──────────────┬───────────────┘
+                    │ REST (RLS: insert/select만)
+           ┌────────▼────────┐
+           │ Supabase TOP 10 │
+           └─────────────────┘`,
+  },
+  {
     id: 'project-ktx-helper',
     title: 'KTX 자동 예매 도우미',
     subtitle: 'KTX 빈자리 자동 감지 & 예매 Chrome 확장',
@@ -618,6 +662,7 @@ const GANTT_COLOR: Record<string, string> = {
   'project-samsung':      'bg-[#00ff41]',
   'project-pcpricetrack': 'bg-lime-400',
   'project-ktx-helper':   'bg-teal-400',
+  'project-shooting-2026': 'bg-cyan-400',
 };
 
 /* ═══════════════════════════════════════════
