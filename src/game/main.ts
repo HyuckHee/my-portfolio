@@ -79,11 +79,28 @@ function update(dt: number) {
     burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#b48cff', 8, 0.15);
   }
 
-  // 수명 초과 → 게임오버
-  for (const e of enemies) {
-    if (isExpired(e, session.gameTime)) {
+  // 수명 초과 → 라이프 차감 (2026 전용 규칙: 2023은 1미스 즉사)
+  // 같은 틱에 여러 마리가 만료돼도 라이프는 1개만 차감 — 일괄 제거로 연쇄 차감 방지
+  const expired = enemies.filter((e) => isExpired(e, session.gameTime));
+  if (expired.length > 0) {
+    let bossLost = false;
+    for (const e of expired) {
+      burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#ff5f57', 14, 0.2);
+      if (e.kind === 'boss') bossLost = true;
+      enemies.splice(enemies.indexOf(e), 1);
+    }
+    session.lives -= 1;
+    shake.trigger(8, 250);
+
+    if (session.lives <= 0) {
       gameOver();
       return;
+    }
+    audio.lifeLost();
+    // 보스를 놓쳤으면 재소환 예약 (안 하면 스테이지 진행 불가)
+    if (bossLost) {
+      session.bossSpawned = false;
+      session.bossCountdown = 500;
     }
   }
 }
@@ -148,6 +165,7 @@ const loop = createLoop(update, (alpha) => {
       shake: shake.offset(),
       score: session.score,
       stage: session.stage,
+      lives: session.lives,
       gameTime: session.gameTime,
       playing: session.phase === 'playing',
     },
@@ -272,6 +290,28 @@ function fit() {
 }
 window.addEventListener('resize', fit);
 
+/* ─── 음소거 버튼 (플레이 중에도 접근 가능하도록 오버레이 밖) ─── */
+const MUTE_KEY = 'shooting2026-muted';
+const muteBtn = document.createElement('button');
+muteBtn.className = 'mute-btn';
+muteBtn.setAttribute('aria-label', '소리 켜기/끄기');
+const applyMute = (muted: boolean) => {
+  audio.setMuted(muted);
+  muteBtn.textContent = muted ? '🔇' : '🔊';
+  try {
+    localStorage.setItem(MUTE_KEY, muted ? '1' : '0');
+  } catch {
+    // localStorage 불가 환경(시크릿 등) — 세션 내에서만 유지
+  }
+};
+muteBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  audio.unlock();
+  applyMute(!audio.isMuted());
+});
+app.querySelector('.stage')?.appendChild(muteBtn);
+applyMute(localStorage.getItem(MUTE_KEY) === '1');
+
 /* ─── 부트스트랩 ─── */
 attachInput(canvas, onTap);
 
@@ -281,6 +321,7 @@ if (import.meta.env.DEV) {
     phase: session.phase,
     stage: session.stage,
     score: session.score,
+    lives: session.lives,
     gameTime: Math.round(session.gameTime),
     enemies: enemies.map((e) => ({ kind: e.kind, hitsLeft: e.hitsLeft, x: e.x, y: e.y, size: e.size, vx: e.vx, vy: e.vy, pattern: e.pattern })),
     spawnInterval: session.spawnInterval,

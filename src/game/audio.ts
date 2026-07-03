@@ -11,6 +11,15 @@ export class AudioBus {
   private ctx: AudioContext | null = null;
   private shootBuffer: AudioBuffer | null = null;
   private loading = false;
+  private muted = false;
+
+  setMuted(muted: boolean) {
+    this.muted = muted;
+  }
+
+  isMuted() {
+    return this.muted;
+  }
 
   /** 첫 사용자 제스처에서 호출 — 컨텍스트 생성/재개 + 에셋 로드 */
   unlock() {
@@ -40,7 +49,7 @@ export class AudioBus {
   }
 
   private playBuffer(buffer: AudioBuffer, volume: number, playbackRate = 1) {
-    if (!this.ctx) return;
+    if (!this.ctx || this.muted) return;
     const src = this.ctx.createBufferSource();
     const gain = this.ctx.createGain();
     src.buffer = buffer;
@@ -52,7 +61,7 @@ export class AudioBus {
 
   /** 합성 비프 — 외부 에셋 없이 UI/이벤트 음을 만든다 */
   private beep(freq: number, duration: number, volume = 0.2, type: OscillatorType = 'square') {
-    if (!this.ctx) return;
+    if (!this.ctx || this.muted) return;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     osc.type = type;
@@ -78,6 +87,12 @@ export class AudioBus {
     this.beep(660, 90);
     setTimeout(() => this.beep(880, 90), 100);
     setTimeout(() => this.beep(1320, 140), 200);
+  }
+
+  /** 라이프 차감 — 게임오버보다 가볍고 짧은 경고음 */
+  lifeLost() {
+    this.beep(392, 110, 0.18, 'sawtooth');
+    setTimeout(() => this.beep(294, 160, 0.18, 'sawtooth'), 110);
   }
 
   gameOver() {

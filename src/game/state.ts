@@ -4,10 +4,14 @@
  */
 export type GamePhase = 'title' | 'playing' | 'gameover';
 
+/** 2026 전용 규칙 확장: 2023은 1미스 즉사, 2026은 라이프 3개 */
+export const MAX_LIVES = 3;
+
 export interface Session {
   phase: GamePhase;
   stage: number;
   score: number;
+  lives: number;
   /** 일반 적 스폰 간격(ms). 스테이지 클리어마다 가속 */
   spawnInterval: number;
   /** 이번 스테이지의 일반 적 쿼터 (15~20 랜덤) */
@@ -30,6 +34,7 @@ export function createSession(): Session {
     phase: 'title',
     stage: 1,
     score: 0,
+    lives: MAX_LIVES,
     spawnInterval: 1000,
     enemyQuota: rollEnemyQuota(),
     spawned: 0,
@@ -44,6 +49,7 @@ export function startGame(s: Session) {
   s.phase = 'playing';
   s.stage = 1;
   s.score = 0;
+  s.lives = MAX_LIVES;
   s.spawnInterval = 1000;
   s.enemyQuota = rollEnemyQuota();
   s.spawned = 0;

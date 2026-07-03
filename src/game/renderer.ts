@@ -25,9 +25,13 @@ export interface Scene {
   shake: { x: number; y: number };
   score: number;
   stage: number;
+  lives: number;
   gameTime: number;
   playing: boolean;
 }
+
+/** HUD 하트 표시 기준 — state.ts의 MAX_LIVES와 일치 */
+const MAX_LIVES_DISPLAY = 3;
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
@@ -101,6 +105,14 @@ export class Renderer {
     ctx.fillText(`score : ${scene.score}`, 20, HUD_H / 2);
     ctx.textAlign = 'right';
     ctx.fillText(`lv.${scene.stage}`, CANVAS_W - 20, HUD_H / 2);
+
+    // LIFE 하트 — 중앙 (잃은 라이프는 어둡게)
+    ctx.textAlign = 'center';
+    ctx.font = '20px ui-monospace, monospace';
+    for (let i = 0; i < MAX_LIVES_DISPLAY; i++) {
+      ctx.fillStyle = i < scene.lives ? '#ff5f57' : '#3a3a3a';
+      ctx.fillText('♥', CANVAS_W / 2 + (i - 1) * 30, HUD_H / 2);
+    }
     ctx.strokeStyle = 'rgba(0,255,65,0.25)';
     ctx.strokeRect(0.5, 0.5, CANVAS_W - 1, HUD_H - 1);
   }
