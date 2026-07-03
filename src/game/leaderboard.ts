@@ -3,8 +3,15 @@
  * Supabase REST API를 SDK 없이 fetch로 직접 호출해 번들 크기를 지킨다.
  * 환경 변수가 없거나 요청이 실패하면 null을 반환하고, 게임은 랭킹 없이 정상 동작한다(fail-soft).
  */
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+// anon key는 클라이언트 공개용으로 설계된 키다 (빌드 산출물에 항상 노출됨).
+// 실제 보호는 RLS(insert/select만 허용)와 DB CHECK 제약이 담당한다.
+// env가 있으면 오버라이드 — 다른 프로젝트로 갈아끼울 때 사용.
+const DEFAULT_URL = 'https://objeooysngihhweoxjeg.supabase.co';
+const DEFAULT_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iamVvb3lzbmdpaGh3ZW94amVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMzc0MzEsImV4cCI6MjA5MDYxMzQzMX0.yDt-3TEXxy1y7v9NpvuNbcRmuer6-EM08uBVLUkNHgs';
+
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string | undefined) ?? DEFAULT_URL;
+const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) ?? DEFAULT_ANON_KEY;
 
 export const leaderboardEnabled = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
