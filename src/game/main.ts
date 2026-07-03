@@ -207,10 +207,19 @@ async function showGameOver() {
              </div>`
           : ''
       }
+      <div id="gameover-board">${boardHtml(top10)}</div>
       <button id="retry" class="btn-text">RETRY</button>
       <button id="to-title" class="btn-text dim">TITLE</button>
     </div>
   `;
+
+  // 순위권 밖이어도 최신 기록판을 보여준다 — 캐시로 즉시 렌더 후 백그라운드 갱신
+  void fetchTop10().then((rows) => {
+    if (rows === null) return;
+    top10 = rows;
+    const board = overlay.querySelector('#gameover-board');
+    if (board) board.innerHTML = boardHtml(top10);
+  });
 
   const form = overlay.querySelector<HTMLFormElement>('#initials-form');
   const input = overlay.querySelector<HTMLInputElement>('#initials');
