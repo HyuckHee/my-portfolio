@@ -4,7 +4,7 @@
  *   백킹스토어를 키워 레티나에서도 선명하게 그린다.
  * - 적은 2023의 CSS wobble(±2deg)을 캔버스 회전으로 재현.
  */
-import type { Enemy } from './entities';
+import { bossHueFor, type Enemy } from './entities';
 import type { Particle } from './particles';
 
 export const HUD_H = 60;
@@ -32,6 +32,8 @@ export interface Scene {
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
   private images = new Map<ImageKey, HTMLImageElement>();
+  /** 스테이지별 보스 색조 캐시 — key: hue(도) */
+  private tintCache = new Map<number, HTMLCanvasElement>();
 
   constructor(private canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
@@ -81,7 +83,7 @@ export class Renderer {
     const bg = this.images.get('bg');
     if (bg) ctx.drawImage(bg, -8, -8, CANVAS_W + 16, CANVAS_H - HUD_H + 16);
 
-    for (const e of scene.enemies) this.drawEnemy(e, scene.gameTime);
+    for (const e of scene.enemies) this.drawEnemy(e, scene.gameTime, scene.stage, alpha);
     this.drawParticles(scene.particles, alpha);
 
     ctx.restore();
@@ -103,14 +105,22 @@ export class Renderer {
     ctx.strokeRect(0.5, 0.5, CANVAS_W - 1, HUD_H - 1);
   }
 
-  private drawEnemy(e: Enemy, gameTime: number) {
+  private drawEnemy(e: Enemy, gameTime: number, stage: number, alpha: number) {
     const { ctx } = this;
-    const img = this.images.get(e.kind === 'boss' ? 'boss' : 'enemy');
-    if (!img) return;
+    const baseImg = this.images.get(e.kind === 'boss' ? 'boss' : 'enemy');
+    if (!baseImg) return;
+
+    // 스테이지 3+ 보스는 스테이지별 색조 (오프스크린 틴트 — ctx.filter의 Safari 이슈 회피)
+    const hue = e.kind === 'boss' ? bossHueFor(stage) : 0;
+    const img: CanvasImageSource = hue > 0 ? this.tinted(baseImg, hue) : baseImg;
+
+    // 이동하는 적은 고정 타임스텝 사이를 보간해 고주사율에서도 부드럽게
+    const ix = e.prevX + (e.x - e.prevX) * alpha;
+    const iy = e.prevY + (e.y - e.prevY) * alpha;
+    const cx = ix + e.size / 2;
+    const cy = iy + e.size / 2;
 
     // 2023 CSS 애니메이션 재현: 일반 적 ±2deg wobble, 보스는 피격 직후 ±15deg 진동
-    const cx = e.x + e.size / 2;
-    const cy = e.y + e.size / 2;
     let angle = Math.sin(gameTime / 50 + e.bornAt) * (2 * Math.PI / 180);
     if (e.kind === 'boss' && gameTime - e.lastHitAt < 200) {
       angle = Math.sin(gameTime / 15) * (15 * Math.PI / 180);
@@ -126,6 +136,26 @@ export class Renderer {
     ctx.globalAlpha = blink ? 0.45 : 1;
     ctx.drawImage(img, -e.size / 2, -e.size / 2, e.size, e.size);
     ctx.restore();
+  }
+
+  /** 이미지에 hue 기반 색을 입힌 오프스크린 캔버스 (hue별 캐시) */
+  private tinted(img: HTMLImageElement, hue: number): HTMLCanvasElement {
+    const cached = this.tintCache.get(hue);
+    if (cached) return cached;
+
+    const off = document.createElement('canvas');
+    off.width = img.naturalWidth || 140;
+    off.height = img.naturalHeight || 140;
+    const octx = off.getContext('2d');
+    if (octx) {
+      octx.drawImage(img, 0, 0, off.width, off.height);
+      octx.globalCompositeOperation = 'source-atop';
+      octx.globalAlpha = 0.45;
+      octx.fillStyle = `hsl(${hue}, 90%, 55%)`;
+      octx.fillRect(0, 0, off.width, off.height);
+    }
+    this.tintCache.set(hue, off);
+    return off;
   }
 
   private drawParticles(pool: Particle[], alpha: number) {

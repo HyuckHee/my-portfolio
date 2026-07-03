@@ -1325,7 +1325,7 @@ const GAME_VERSIONS = {
   },
   '2026': {
     src: '/game2026/index.html',
-    caption: 'TypeScript · Canvas · 고정 타임스텝 리라이트 — 2023년 주석으로 남았던 랭킹 기능을 완성',
+    caption: 'TypeScript · Canvas 리라이트 — 랭킹 완성 + 스테이지 3부터 2026 전용 진화 난이도',
     sourceUrl: 'https://github.com/HyuckHee/my-portfolio/tree/main/src/game',
     sourceLabel: '2026 소스 보기',
   },

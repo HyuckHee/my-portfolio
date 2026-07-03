@@ -6,7 +6,7 @@
  */
 import { createLoop } from './loop';
 import { createSession, startGame, stageUp } from './state';
-import { spawnEnemy, hitEnemy, isExpired, containsPoint, type Enemy } from './entities';
+import { spawnEnemy, updateEnemies, hitEnemy, isExpired, containsPoint, type Enemy } from './entities';
 import { Renderer, CANVAS_W, CANVAS_H, HUD_H } from './renderer';
 import { burst, updateParticles, type Particle } from './particles';
 import { ScreenShake } from './effects';
@@ -59,7 +59,7 @@ function update(dt: number) {
   // 일반 적 스폰 — 쿼터까지 spawnInterval 간격
   if (session.spawned < session.enemyQuota && session.spawnTimer >= session.spawnInterval) {
     session.spawnTimer = 0;
-    enemies.push(spawnEnemy('normal', session.gameTime));
+    enemies.push(spawnEnemy('normal', session.gameTime, session.stage));
     session.spawned += 1;
     if (session.spawned === session.enemyQuota) session.bossCountdown = 500; // 보스 예고
   }
@@ -68,9 +68,15 @@ function update(dt: number) {
   if (session.bossCountdown !== null && !session.bossSpawned) {
     session.bossCountdown -= dt;
     if (session.bossCountdown <= 0) {
-      enemies.push(spawnEnemy('boss', session.gameTime));
+      enemies.push(spawnEnemy('boss', session.gameTime, session.stage));
       session.bossSpawned = true;
     }
+  }
+
+  // 스테이지 3+ 진화: 이동(벽 반사) + phantom 보스 자가 텔레포트
+  const selfTeleported = updateEnemies(enemies, dt, session.gameTime);
+  for (const e of selfTeleported) {
+    burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#b48cff', 8, 0.15);
   }
 
   // 수명 초과 → 게임오버
@@ -171,7 +177,7 @@ function showTitle() {
       <p class="sub">TypeScript · Canvas · 고정 타임스텝 — 2023년 그 게임의 리라이트</p>
       ${boardHtml(top10)}
       <button id="start" class="btn-start"><img src="/game/img/shooting/start.svg" alt="START" /></button>
-      <p class="hint">적이 사라지기 전에 클릭! 보스는 5번 맞혀야 다음 레벨</p>
+      <p class="hint">적이 사라지기 전에 클릭! 보스는 5번 맞혀야 다음 레벨<br />스테이지 3부터 적이 움직이고, 보스가 진화합니다</p>
     </div>
   `;
   overlay.querySelector('#start')?.addEventListener('click', () => {
@@ -267,7 +273,7 @@ if (import.meta.env.DEV) {
     stage: session.stage,
     score: session.score,
     gameTime: Math.round(session.gameTime),
-    enemies: enemies.map((e) => ({ kind: e.kind, hitsLeft: e.hitsLeft, x: e.x, y: e.y, size: e.size })),
+    enemies: enemies.map((e) => ({ kind: e.kind, hitsLeft: e.hitsLeft, x: e.x, y: e.y, size: e.size, vx: e.vx, vy: e.vy, pattern: e.pattern })),
     spawnInterval: session.spawnInterval,
   });
 }
