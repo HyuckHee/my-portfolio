@@ -78,7 +78,7 @@ export function spawnEnemy(kind: EnemyKind, gameTime: number, stage: number): En
 
   let speed = 0;
   if (kind === 'normal') speed = enemySpeedFor(stage);
-  else if (pattern !== 'classic') speed = enemySpeedFor(stage) * 0.8; // 보스는 크니까 약간 느리게
+  else if (pattern !== 'classic') speed = enemySpeedFor(stage) * 1.25; // 보스는 타깃이 커서(140px) 더 빨라도 공정
 
   const { vx, vy } = speed > 0 ? randomVelocity(speed) : { vx: 0, vy: 0 };
   const x = randomPos(FIELD_W, spec.size);
