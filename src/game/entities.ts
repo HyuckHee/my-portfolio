@@ -10,9 +10,14 @@ export const FIELD_H = 550;
 
 export type EnemyKind = 'normal' | 'boss' | 'civilian';
 
-/** 민간인(우주비행사) 등장 시작 스테이지 / 일반 적 스폰당 동반 등장 확률 */
+/** 민간인(우주비행사) 등장 시작 스테이지 */
 export const CIVILIAN_STAGE = 5;
-export const CIVILIAN_CHANCE = 0.25;
+
+/** 일반 적 스폰당 민간인 동반 등장 확률 — 스테이지 5에서 15%, 스테이지당 +5%p, 상한 40% */
+export function civilianChanceFor(stage: number): number {
+  if (stage < CIVILIAN_STAGE) return 0;
+  return Math.min(0.15 + (stage - CIVILIAN_STAGE) * 0.05, 0.4);
+}
 
 /** 보스 행동 패턴 — 스테이지에 따라 진화 */
 export type BossPattern = 'classic' | 'drifter' | 'phantom';

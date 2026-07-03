@@ -13,7 +13,7 @@ import {
   isExpired,
   containsPoint,
   CIVILIAN_STAGE,
-  CIVILIAN_CHANCE,
+  civilianChanceFor,
   type Enemy,
 } from './entities';
 import { Renderer, CANVAS_W, CANVAS_H, HUD_H } from './renderer';
@@ -72,8 +72,8 @@ function update(dt: number) {
     session.spawned += 1;
     if (session.spawned === session.enemyQuota) session.bossCountdown = 500; // 보스 예고
 
-    // 스테이지 5+: 일반 적 스폰과 함께 확률적으로 민간인(우주비행사) 등장
-    if (session.stage >= CIVILIAN_STAGE && Math.random() < CIVILIAN_CHANCE) {
+    // 스테이지 5+: 일반 적 스폰과 함께 확률적으로 민간인(우주비행사) 등장 — 스테이지가 오를수록 잦아짐
+    if (session.stage >= CIVILIAN_STAGE && Math.random() < civilianChanceFor(session.stage)) {
       enemies.push(spawnEnemy('civilian', session.gameTime, session.stage));
     }
   }
