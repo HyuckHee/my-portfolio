@@ -1316,13 +1316,33 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }
 }
 
 /* ─── Shooting Game Modal ─── */
+const GAME_VERSIONS = {
+  '2023': {
+    src: '/game/index.html',
+    caption: '바닐라 JS · DOM 렌더링 — 2023년 원본 그대로 (버그 포함 보존)',
+    sourceUrl: 'https://github.com/HyuckHee/HyuckHee.github.io',
+    sourceLabel: '2023 소스 보기',
+  },
+  '2026': {
+    src: '/game2026/index.html',
+    caption: 'TypeScript · Canvas · 고정 타임스텝 리라이트 — 2023년 주석으로 남았던 랭킹 기능을 완성',
+    sourceUrl: 'https://github.com/HyuckHee/my-portfolio/tree/main/src/game',
+    sourceLabel: '2026 소스 보기',
+  },
+} as const;
+type GameVersion = keyof typeof GAME_VERSIONS;
+
 function GameModal({ onClose }: { onClose: () => void }) {
+  const [version, setVersion] = useState<GameVersion>('2026');
+
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', h);
     document.body.style.overflow = 'hidden';
     return () => { window.removeEventListener('keydown', h); document.body.style.overflow = ''; };
   }, [onClose]);
+
+  const v = GAME_VERSIONS[version];
 
   return createPortal(
     <div
@@ -1334,16 +1354,31 @@ function GameModal({ onClose }: { onClose: () => void }) {
           <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-          <span className="ml-2 text-[10px] font-mono text-[#666] truncate">./play shooting-game</span>
-          <button onClick={onClose} aria-label="닫기" className="ml-auto w-7 h-7 flex items-center justify-center border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] rounded transition-colors shrink-0">
+          <span className="ml-2 text-[10px] font-mono text-[#666] truncate">./play shooting-game --version={version}</span>
+          <div className="ml-auto flex items-center rounded border border-[#333] overflow-hidden shrink-0" role="tablist" aria-label="게임 버전 선택">
+            {(Object.keys(GAME_VERSIONS) as GameVersion[]).map((key) => (
+              <button
+                key={key}
+                role="tab"
+                aria-selected={version === key}
+                onClick={() => setVersion(key)}
+                className={`px-2.5 py-1 text-[10px] font-mono transition-colors ${
+                  version === key ? 'bg-[#00ff41] text-black font-bold' : 'text-[#888] hover:text-[#00ff41]'
+                }`}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+          <button onClick={onClose} aria-label="닫기" className="ml-2 w-7 h-7 flex items-center justify-center border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] rounded transition-colors shrink-0">
             ✕
           </button>
         </div>
-        <iframe src="/game/index.html" title="바닐라 JS 슈팅 게임" className="w-full h-[70vh] max-h-[680px] block bg-[#181818] border-0" />
+        <iframe key={version} src={v.src} title={`슈팅 게임 ${version}`} className="w-full h-[70vh] max-h-[680px] block bg-[#181818] border-0" />
         <div className="px-4 py-2.5 border-t border-[#2a2a2a] flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono text-[#555]">
-          <span>적이 사라지기 전에 클릭 · 보스는 5번 맞혀야 다음 레벨</span>
-          <a href="https://github.com/HyuckHee/HyuckHee.github.io" target="_blank" rel="noreferrer" className="ml-auto hover:text-[#00ff41] transition-colors">
-            소스 보기 →
+          <span>{v.caption}</span>
+          <a href={v.sourceUrl} target="_blank" rel="noreferrer" className="ml-auto hover:text-[#00ff41] transition-colors">
+            {v.sourceLabel} →
           </a>
         </div>
       </div>
@@ -1415,15 +1450,15 @@ function Projects() {
         </div>
       </div>
       <div id="game" className="max-w-5xl mx-auto px-6 mt-12 scroll-mt-20">
-        <TerminalWindow title="shooting-game — vanilla js (2023)">
+        <TerminalWindow title="shooting-game — 2023 vs 2026">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="min-w-0 flex-1">
               <div className="font-mono text-xs text-[#00ff41] mb-1.5">
-                <span className="text-[#333]">$</span> ./play shooting-game
+                <span className="text-[#333]">$</span> diff ./2023-vanilla-js ./2026-typescript-canvas
               </div>
               <p className="text-[#888] text-sm leading-relaxed font-sans">
-                프레임워크 없이 바닐라 JS로 만든 슈팅 게임 — requestAnimationFrame 루프와 DOM 이벤트만으로 구현했습니다.
-                적이 사라지기 전에 클릭하세요.
+                2023년 바닐라 JS로 만든 슈팅 게임을 2026년에 TypeScript + Canvas로 리라이트했습니다.
+                같은 규칙, 3년의 차이 — 두 버전을 토글로 전환하며 직접 비교해보세요.
               </p>
             </div>
             <button

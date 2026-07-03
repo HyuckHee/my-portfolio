@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>슈팅 게임 2026 — TypeScript + Canvas</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #181818;
+            min-height: 100%;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+        }
+        .stage-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 8px 0;
+        }
+        .stage {
+            position: relative;
+            width: 700px;
+            height: 610px;
+            transform-origin: top center;
+        }
+        #game {
+            display: block;
+            width: 700px;
+            height: 610px;
+            border-radius: 12px;
+        }
+        .overlay {
+            position: absolute;
+            inset: 60px 0 0 0; /* HUD 아래 필드 영역만 덮음 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .overlay:empty { display: none; }
+        .panel {
+            pointer-events: auto;
+            text-align: center;
+            background: rgba(10, 14, 10, 0.82);
+            border: 1px solid rgba(0, 255, 65, 0.35);
+            border-radius: 12px;
+            padding: 22px 34px;
+            color: #cfe;
+            max-width: 520px;
+            max-height: 520px;
+            overflow-y: auto;
+        }
+        .panel h1 {
+            margin: 0 0 6px;
+            color: #fff;
+            letter-spacing: 4px;
+            font-size: 30px;
+        }
+        .panel h1 span { color: #00ff41; }
+        .panel h1.over { color: #ff5f57; }
+        .sub { margin: 0 0 12px; font-size: 11px; color: #8a9; }
+        .final { font-size: 22px; color: #00ff41; margin: 4px 0 14px; }
+        .hint { font-size: 10px; color: #678; margin-top: 12px; }
+        .btn-start {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .btn-start:hover { transform: scale(1.15); }
+        .btn-start img { width: 170px; display: block; }
+        .btn-text {
+            display: inline-block;
+            margin: 4px 6px 0;
+            background: #00ff41;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            padding: 9px 22px;
+            font: bold 13px 'JetBrains Mono', monospace;
+            cursor: pointer;
+        }
+        .btn-text:hover { background: #00cc33; }
+        .btn-text.dim { background: transparent; color: #9ab; border: 1px solid #345; }
+        .board { margin: 6px auto 12px; }
+        .board-title { color: #ffd447; font-size: 12px; letter-spacing: 3px; margin: 0 0 6px; }
+        .board ol { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+        .board li {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            padding: 1.5px 0;
+            color: #bcd;
+            white-space: pre;
+        }
+        .board li:first-child { color: #ffd447; }
+        .board .rank { color: #00ff41; width: 2.2em; text-align: right; }
+        .board .name { width: 3.4em; text-align: left; letter-spacing: 2px; }
+        .board .pts { width: 5.5em; text-align: right; }
+        .board .empty { color: #567; font-size: 11px; }
+        .entry { margin: 8px 0 10px; }
+        .entry-title { color: #ffd447; font-size: 12px; }
+        .entry input {
+            width: 5.2em;
+            background: #06130a;
+            color: #00ff41;
+            border: 1px solid rgba(0, 255, 65, 0.5);
+            border-radius: 6px;
+            font: bold 22px 'JetBrains Mono', monospace;
+            text-align: center;
+            letter-spacing: 6px;
+            padding: 6px 4px;
+            text-transform: uppercase;
+        }
+        .entry button {
+            margin-left: 8px;
+            background: #ffd447;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font: bold 13px 'JetBrains Mono', monospace;
+            cursor: pointer;
+        }
+        .entry button:disabled { opacity: 0.5; cursor: default; }
+        .entry-error { color: #ff5f57; font-size: 11px; min-height: 14px; margin: 6px 0 0; }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module" src="/src/game/main.ts"></script>
+</body>
+</html>
