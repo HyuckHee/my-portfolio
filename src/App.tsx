@@ -1221,6 +1221,18 @@ const GALLERY: GalleryItem[] = [
       { src: '/projects/ktx-payment.png', label: '예약 성공 → 결제 대기' },
     ],
   },
+  {
+    id: 'ogq-sticker',
+    title: 'AI 이모티콘 — 왕희는 주식중',
+    subtitle: 'AI 이미지 생성과 프롬프트 엔지니어링으로 제작한 주식 밈 스티커팩. OGQ 심사를 통과해 마켓에서 판매 중이고, 카카오 이모티콘 심사도 진행 중입니다.',
+    url: 'creators.ogq.me · 왕희는 주식중',
+    liveUrl: 'https://creators.ogq.me/share/sticker/6546a8aaaa4a5',
+    tags: ['AI 이미지 생성', '프롬프트 엔지니어링', 'OGQ 마켓 판매 중'],
+    shots: [
+      { src: '/projects/ogq-main.png', label: '왕희는 주식중 — OGQ 마켓 판매 중' },
+      { src: '/projects/ogq-grid.png', label: '스티커 구성 — 주식 밈 컨셉' },
+    ],
+  },
 ];
 
 /* ─── Lightbox ─── */
