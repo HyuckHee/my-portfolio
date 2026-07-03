@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# build output (Vercel이 자체 빌드하므로 커밋 불필요)
+dist/
+
+# env — 로컬 시크릿, 절대 커밋 금지
+.env
+.env.local
+.env.*.local
+
+# tooling state
+.gstack/
+.vercel/
+
+# OS
+.DS_Store
