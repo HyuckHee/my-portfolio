@@ -6,7 +6,16 @@
  */
 import { createLoop } from './loop';
 import { createSession, startGame, stageUp } from './state';
-import { spawnEnemy, updateEnemies, hitEnemy, isExpired, containsPoint, type Enemy } from './entities';
+import {
+  spawnEnemy,
+  updateEnemies,
+  hitEnemy,
+  isExpired,
+  containsPoint,
+  CIVILIAN_STAGE,
+  CIVILIAN_CHANCE,
+  type Enemy,
+} from './entities';
 import { Renderer, CANVAS_W, CANVAS_H, HUD_H } from './renderer';
 import { burst, updateParticles, type Particle } from './particles';
 import { ScreenShake } from './effects';
@@ -62,6 +71,11 @@ function update(dt: number) {
     enemies.push(spawnEnemy('normal', session.gameTime, session.stage));
     session.spawned += 1;
     if (session.spawned === session.enemyQuota) session.bossCountdown = 500; // 보스 예고
+
+    // 스테이지 5+: 일반 적 스폰과 함께 확률적으로 민간인(우주비행사) 등장
+    if (session.stage >= CIVILIAN_STAGE && Math.random() < CIVILIAN_CHANCE) {
+      enemies.push(spawnEnemy('civilian', session.gameTime, session.stage));
+    }
   }
 
   // 보스 스폰 — 쿼터 도달 +500ms (게임 시간 기준)
@@ -77,6 +91,15 @@ function update(dt: number) {
   const selfTeleported = updateEnemies(enemies, dt, session.gameTime);
   for (const e of selfTeleported) {
     burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#b48cff', 8, 0.15);
+  }
+
+  // 민간인은 수명이 다하면 무벌점 퇴장
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const e = enemies[i];
+    if (e.kind === 'civilian' && isExpired(e, session.gameTime)) {
+      burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#9ecbff', 6, 0.1);
+      enemies.splice(i, 1);
+    }
   }
 
   // 수명 초과 → 라이프 차감 (2026 전용 규칙: 2023은 1미스 즉사)
@@ -115,6 +138,20 @@ function onTap(x: number, y: number) {
   for (let i = enemies.length - 1; i >= 0; i--) {
     const e = enemies[i];
     if (!e.alive || !containsPoint(e, fx, fy)) continue;
+
+    // 민간인 오사(誤射): 점수 대신 라이프를 잃는다
+    if (e.kind === 'civilian') {
+      enemies.splice(i, 1);
+      session.lives -= 1;
+      burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#ff5f57', 20, 0.22);
+      shake.trigger(9, 250);
+      if (session.lives <= 0) {
+        gameOver();
+        return;
+      }
+      audio.civilianHit();
+      return;
+    }
 
     const result = hitEnemy(e, session.gameTime);
     const cx = e.x + e.size / 2;
@@ -168,6 +205,7 @@ const loop = createLoop(update, (alpha) => {
       lives: session.lives,
       gameTime: session.gameTime,
       playing: session.phase === 'playing',
+      banner: { title: session.bannerTitle, sub: session.bannerSub, until: session.bannerUntil },
     },
     alpha,
   );
@@ -317,6 +355,14 @@ attachInput(canvas, onTap);
 
 // dev 전용 상태 조회 훅 (프로덕션 번들에서 제거됨)
 if (import.meta.env.DEV) {
+  // 스테이지 점프 — 상위 스테이지 기능(민간인·팬텀) 테스트용
+  (window as unknown as Record<string, unknown>).__gameForceStage = (n: number) => {
+    if (session.phase !== 'playing') return 'not playing';
+    session.stage = n - 1;
+    enemies.length = 0;
+    stageUp(session);
+    return `stage ${session.stage}`;
+  };
   (window as unknown as Record<string, unknown>).__gameDebug = () => ({
     phase: session.phase,
     stage: session.stage,
@@ -324,6 +370,7 @@ if (import.meta.env.DEV) {
     lives: session.lives,
     gameTime: Math.round(session.gameTime),
     enemies: enemies.map((e) => ({ kind: e.kind, hitsLeft: e.hitsLeft, x: e.x, y: e.y, size: e.size, vx: e.vx, vy: e.vy, pattern: e.pattern })),
+    banner: { title: session.bannerTitle, sub: session.bannerSub, activeFor: Math.max(0, Math.round(session.bannerUntil - session.gameTime)) },
     spawnInterval: session.spawnInterval,
   });
 }

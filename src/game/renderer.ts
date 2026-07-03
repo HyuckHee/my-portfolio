@@ -28,6 +28,7 @@ export interface Scene {
   lives: number;
   gameTime: number;
   playing: boolean;
+  banner: { title: string; sub: string; until: number };
 }
 
 /** HUD 하트 표시 기준 — state.ts의 MAX_LIVES와 일치 */
@@ -89,8 +90,34 @@ export class Renderer {
 
     for (const e of scene.enemies) this.drawEnemy(e, scene.gameTime, scene.stage, alpha);
     this.drawParticles(scene.particles, alpha);
+    if (scene.playing) this.drawBanner(scene);
 
     ctx.restore();
+    ctx.restore();
+  }
+
+  /** 스테이지 전환 배너 — 새 시스템 안내, 마지막 500ms 동안 페이드아웃 */
+  private drawBanner(scene: Scene) {
+    const remaining = scene.banner.until - scene.gameTime;
+    if (remaining <= 0 || !scene.banner.title) return;
+    const { ctx } = this;
+    const fieldH = CANVAS_H - HUD_H;
+    const fade = Math.min(1, remaining / 500);
+
+    ctx.save();
+    ctx.globalAlpha = 0.65 * fade;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, fieldH / 2 - 58, CANVAS_W, 116);
+
+    ctx.globalAlpha = fade;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#00ff41';
+    ctx.font = 'bold 40px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillText(scene.banner.title, CANVAS_W / 2, fieldH / 2 - 16);
+    ctx.fillStyle = '#ffd447';
+    ctx.font = '17px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillText(scene.banner.sub, CANVAS_W / 2, fieldH / 2 + 26);
     ctx.restore();
   }
 
@@ -119,6 +146,13 @@ export class Renderer {
 
   private drawEnemy(e: Enemy, gameTime: number, stage: number, alpha: number) {
     const { ctx } = this;
+
+    // 민간인(우주비행사)은 이모지 렌더링 — 별도 에셋 불필요
+    if (e.kind === 'civilian') {
+      this.drawCivilian(e, gameTime, alpha);
+      return;
+    }
+
     const baseImg = this.images.get(e.kind === 'boss' ? 'boss' : 'enemy');
     if (!baseImg) return;
 
@@ -147,6 +181,27 @@ export class Renderer {
     ctx.rotate(angle);
     ctx.globalAlpha = blink ? 0.45 : 1;
     ctx.drawImage(img, -e.size / 2, -e.size / 2, e.size, e.size);
+    ctx.restore();
+  }
+
+  private drawCivilian(e: Enemy, gameTime: number, alpha: number) {
+    const { ctx } = this;
+    const ix = e.prevX + (e.x - e.prevX) * alpha;
+    const iy = e.prevY + (e.y - e.prevY) * alpha;
+
+    // 우주 유영 느낌 — 느린 회전 + 수명 임박 시 깜빡임
+    const angle = Math.sin(gameTime / 400 + e.bornAt) * (12 * Math.PI / 180);
+    const lifeLeft = (e.bornAt + e.lifetime - gameTime) / e.lifetime;
+    const blink = lifeLeft < 0.25 && Math.floor(gameTime / 120) % 2 === 0;
+
+    ctx.save();
+    ctx.translate(ix + e.size / 2, iy + e.size / 2);
+    ctx.rotate(angle);
+    ctx.globalAlpha = blink ? 0.45 : 1;
+    ctx.font = `${Math.round(e.size * 0.85)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🧑‍🚀', 0, 4);
     ctx.restore();
   }
 

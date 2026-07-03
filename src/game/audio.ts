@@ -89,6 +89,12 @@ export class AudioBus {
     setTimeout(() => this.beep(1320, 140), 200);
   }
 
+  /** 민간인 오사 — 낮고 거친 버저 */
+  civilianHit() {
+    this.beep(140, 320, 0.22, 'sawtooth');
+    setTimeout(() => this.beep(110, 220, 0.18, 'sawtooth'), 120);
+  }
+
   /** 라이프 차감 — 게임오버보다 가볍고 짧은 경고음 */
   lifeLost() {
     this.beep(392, 110, 0.18, 'sawtooth');

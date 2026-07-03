@@ -24,6 +24,28 @@ export interface Session {
   /** 쿼터 도달 후 보스 등장까지 +500ms 대기 */
   bossCountdown: number | null;
   bossSpawned: boolean;
+  /** 스테이지 전환 배너 — 게임 시간 기준 표시 종료 시점 */
+  bannerUntil: number;
+  bannerTitle: string;
+  bannerSub: string;
+}
+
+/** 스테이지 진입 배너 문구 — 새로 추가되는 시스템을 플레이어에게 알린다 */
+export function stageNotice(stage: number): string {
+  if (stage === 1) return '적이 사라지기 전에 클릭!';
+  if (stage === 2) return '스폰 속도 증가';
+  if (stage === 3) return '적이 움직이기 시작합니다';
+  if (stage === 4) return '더 빠르게, 더 어렵게';
+  if (stage === 5) return '팬텀 보스 · 우주비행사를 쏘지 마세요!';
+  return '속도 증가 — 한계에 도전하세요';
+}
+
+const BANNER_DURATION = 1800;
+
+function showBanner(s: Session) {
+  s.bannerTitle = `STAGE ${s.stage}`;
+  s.bannerSub = stageNotice(s.stage);
+  s.bannerUntil = s.gameTime + BANNER_DURATION;
 }
 
 /** 스테이지당 일반 적 수: 15~20 (2023: random*(20-15+1)+15) */
@@ -42,6 +64,9 @@ export function createSession(): Session {
     spawnTimer: 0,
     bossCountdown: null,
     bossSpawned: false,
+    bannerUntil: 0,
+    bannerTitle: '',
+    bannerSub: '',
   };
 }
 
@@ -57,6 +82,7 @@ export function startGame(s: Session) {
   s.spawnTimer = 0;
   s.bossCountdown = null;
   s.bossSpawned = false;
+  showBanner(s);
 }
 
 /**
@@ -72,4 +98,5 @@ export function stageUp(s: Session) {
   s.spawnTimer = 0;
   s.bossCountdown = null;
   s.bossSpawned = false;
+  showBanner(s);
 }

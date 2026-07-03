@@ -8,7 +8,11 @@
 export const FIELD_W = 700;
 export const FIELD_H = 550;
 
-export type EnemyKind = 'normal' | 'boss';
+export type EnemyKind = 'normal' | 'boss' | 'civilian';
+
+/** 민간인(우주비행사) 등장 시작 스테이지 / 일반 적 스폰당 동반 등장 확률 */
+export const CIVILIAN_STAGE = 5;
+export const CIVILIAN_CHANCE = 0.25;
 
 /** 보스 행동 패턴 — 스테이지에 따라 진화 */
 export type BossPattern = 'classic' | 'drifter' | 'phantom';
@@ -40,6 +44,8 @@ export interface Enemy {
 const SPEC = {
   normal: { size: 80, lifetime: 3000, hits: 1, value: 100 },
   boss: { size: 140, lifetime: 5000, hits: 5, value: 1000 },
+  // 민간인: 쏘면 라이프 차감, 수명이 다하면 무벌점으로 퇴장
+  civilian: { size: 80, lifetime: 2500, hits: 1, value: 0 },
 } as const;
 
 /** phantom 보스 자가 텔레포트 주기(ms) */
@@ -78,6 +84,7 @@ export function spawnEnemy(kind: EnemyKind, gameTime: number, stage: number): En
 
   let speed = 0;
   if (kind === 'normal') speed = enemySpeedFor(stage);
+  else if (kind === 'civilian') speed = enemySpeedFor(stage) * 0.7; // 우주 유영 — 적보다 느긋하게
   else if (pattern !== 'classic') speed = enemySpeedFor(stage) * 1.25; // 보스는 타깃이 커서(140px) 더 빨라도 공정
 
   const { vx, vy } = speed > 0 ? randomVelocity(speed) : { vx: 0, vy: 0 };
