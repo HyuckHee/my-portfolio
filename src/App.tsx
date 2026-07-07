@@ -1249,11 +1249,12 @@ const GALLERY: GalleryItem[] = [
 ];
 
 /* ─── Lightbox ─── */
-function Lightbox({ item, index, onClose, onNav }: {
+function Lightbox({ item, index, onClose, onNav, onPlay }: {
   item: GalleryItem;
   index: number;
   onClose: () => void;
   onNav: (dir: 1 | -1) => void;
+  onPlay?: () => void;
 }) {
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -1279,9 +1280,16 @@ function Lightbox({ item, index, onClose, onNav }: {
           <span className="text-[#00ff41] text-sm font-semibold">{item.title}</span>
           <span className="text-[#666] text-xs ml-2 truncate">{shot.label}</span>
         </div>
-        <button onClick={onClose} aria-label="닫기" className="w-8 h-8 flex items-center justify-center border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] rounded transition-colors shrink-0">
-          ✕
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          {onPlay && (
+            <button onClick={onPlay} className="bg-[#00ff41] hover:bg-[#00cc33] text-black px-3 py-1.5 rounded text-xs font-semibold font-mono transition-colors">
+              ▶ 게임해보기
+            </button>
+          )}
+          <button onClick={onClose} aria-label="닫기" className="w-8 h-8 flex items-center justify-center border border-[#333] hover:border-[#00ff41]/50 text-[#888] hover:text-[#00ff41] rounded transition-colors">
+            ✕
+          </button>
+        </div>
       </div>
 
       <div className="relative w-full max-w-5xl bg-[#1c1c1c] border border-[#363636] rounded-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
@@ -1458,7 +1466,7 @@ function GameModal({ onClose }: { onClose: () => void }) {
 }
 
 /* ─── Gallery Section ─── */
-function ProjectGallery() {
+function ProjectGallery({ onPlayGame }: { onPlayGame?: () => void }) {
   const ref = useFadeIn();
   const [box, setBox] = useState<{ item: number; idx: number } | null>(null);
 
@@ -1487,6 +1495,7 @@ function ProjectGallery() {
           index={box.idx}
           onClose={() => setBox(null)}
           onNav={nav}
+          onPlay={GALLERY[box.item].id === 'shooting-2026' && onPlayGame ? () => { setBox(null); onPlayGame(); } : undefined}
         />
       )}
     </div>
@@ -1503,7 +1512,7 @@ function Projects() {
           <span className="text-[#00ff41]">#</span> Projects
           <span className="text-[#333] text-sm font-normal ml-2">// 프로젝트</span>
         </h2>
-        <ProjectGallery />
+        <ProjectGallery onPlayGame={() => setGameOpen(true)} />
         <ProjectGantt />
         <div className="flex justify-end mb-3">
           <ScrollArrows canScrollLeft={projLeft} canScrollRight={projRight} onScroll={projScroll} />
