@@ -1222,6 +1222,19 @@ const GALLERY: GalleryItem[] = [
     ],
   },
   {
+    id: 'shooting-2026',
+    title: '슈팅 게임 2026',
+    subtitle: '2023 바닐라 JS 슈팅 게임을 TypeScript + Canvas로 리라이트한 클릭 슈팅 게임. 고정 타임스텝 루프와 Supabase 오락실 TOP 10 랭킹을 갖췄고, 사이트에서 2023 원본과 토글로 비교하며 바로 플레이할 수 있습니다.',
+    url: 'my-portfolio-hyuckhees-projects.vercel.app/game2026',
+    liveUrl: 'https://my-portfolio-hyuckhees-projects.vercel.app/game2026/index.html',
+    tags: ['TypeScript', 'Canvas 2D', 'Supabase'],
+    shots: [
+      { src: '/projects/shooting-title.png', label: '타이틀 — Supabase 오락실 TOP 10 랭킹' },
+      { src: '/projects/shooting-play.png', label: '플레이 — 적이 사라지기 전에 클릭!' },
+      { src: '/og-shooting.jpg', label: 'OG 카드 — 링크 공유 미리보기' },
+    ],
+  },
+  {
     id: 'ogq-sticker',
     title: 'AI 이모티콘 — 왕희는 주식중',
     subtitle: 'Claude로 프롬프트를 설계하고 Gemini로 이미지를 생성한 주식 밈 스티커팩. OGQ 심사를 통과해 마켓에서 판매 중이고, 카카오 이모티콘 심사도 진행 중입니다.',
