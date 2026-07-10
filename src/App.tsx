@@ -1182,7 +1182,7 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
 }
 
 /* ─── Side Project Gallery ─── */
-type Shot = { src: string; label: string };
+type Shot = { src: string; label: string; video?: string };
 type GalleryItem = {
   id: string;
   title: string;
@@ -1215,6 +1215,7 @@ const GALLERY: GalleryItem[] = [
     liveUrl: null,
     tags: ['Chrome MV3', 'MutationObserver'],
     shots: [
+      { src: '/projects/ktx-demo-poster.jpg', video: '/projects/ktx-demo.mp4', label: '예매 영상 — 취소표 감지 → 자동 예매 → 예약완료 (코레일 UI 재현 데모)' },
       { src: '/projects/ktx-full.png', label: '전체 — KTX 예매 화면 + 자동 예매 도우미' },
       { src: '/projects/ktx-settings.png', label: '탑승 시간대 설정 + 예약 컨트롤' },
       { src: '/projects/ktx-done.png', label: '조건 부합 시 자동 예약 완료' },
@@ -1299,7 +1300,21 @@ function Lightbox({ item, index, onClose, onNav, onPlay }: {
           <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
           <span className="ml-2 text-[10px] font-mono text-[#666] truncate">{item.url}</span>
         </div>
-        <img src={shot.src} alt={`${item.title} — ${shot.label}`} className="w-full block max-h-[70vh] object-contain bg-[#181818]" />
+        {shot.video ? (
+          <video
+            key={shot.video}
+            src={shot.video}
+            poster={shot.src}
+            autoPlay
+            muted
+            loop
+            playsInline
+            controls
+            className="w-full block max-h-[70vh] object-contain bg-[#181818]"
+          />
+        ) : (
+          <img src={shot.src} alt={`${item.title} — ${shot.label}`} className="w-full block max-h-[70vh] object-contain bg-[#181818]" />
+        )}
 
         {multi && (
           <>
@@ -1348,6 +1363,11 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: () => void }
             className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          {item.shots[0].video && (
+            <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <span className="w-12 h-12 rounded-full bg-black/60 border border-[#00ff41]/50 flex items-center justify-center pl-1 text-[#00ff41] text-base transition-transform duration-300 group-hover:scale-110">▶</span>
+            </span>
+          )}
           <span className="absolute bottom-2 right-2 flex items-center gap-1 text-[10px] font-mono text-[#00ff41] bg-black/70 border border-[#00ff41]/30 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             {item.shots.length > 1 ? `${item.shots.length} shots` : '크게 보기'}
