@@ -559,8 +559,18 @@ const PROJECTS = [
     role: '풀스택 개발자',
     liveUrl: null,
     githubUrl: null,
+    demoUrl: '/haccp-demo/index.html' as string | null,
+    demoLabel: '일지 화면 데모' as string | null,
+    shots: [
+      { src: '/projects/haccp-ferment.png', label: '발효 일지 — 출국·밑술·술덧·증류·제조비율 통합 (예시 데이터)' },
+      { src: '/projects/haccp-ccp1b.png', label: 'CCP-1B 모니터링 일지 — 소주 증류공정 (예시 데이터)' },
+      { src: '/projects/haccp-ccp3p.png', label: 'CCP-3P 모니터링 일지 — 용기세척공정 (예시 데이터)' },
+      { src: '/projects/haccp-jongguk.png', label: '종국 관리일지 — 부재료 수불일보 (예시 데이터)' },
+      { src: '/projects/haccp-makgeolli.png', label: '막걸리 발효일지 — 제국·밑술·술덧 공정 (예시 데이터)' },
+    ] as Shot[],
     desc: '생산 현장에서 HACCP 관련 일지를 수기로 작성하여 데이터 추적과 인증 관리가 비효율적이었습니다.',
     solution: [
+      'CCP 모니터링(증류·용기세척)·발효·종국 수불 등 공정별 일지 화면 개발',
       '일지 결재 및 상품일지 기능 개발',
       '수기 업무를 시스템으로 전환하는 프로세스 구현',
       '현장 사용성을 고려한 기능 개발',
@@ -1084,6 +1094,15 @@ function ProjectGantt() {
 /* ─── Project Card ─── */
 function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
   const ref = useFadeIn();
+  const [shotIdx, setShotIdx] = useState<number | null>(null);
+  const shots = project.shots ?? [];
+  const navShot = useCallback((dir: 1 | -1) => {
+    setShotIdx((i) => {
+      if (i === null) return i;
+      const len = project.shots?.length ?? 0;
+      return len ? (i + dir + len) % len : i;
+    });
+  }, [project.shots]);
   const [sy, sm] = project.period.start.split('-');
   const periodLabel = project.period.end
     ? (() => { const [ey, em] = project.period.end!.split('-'); return `${sy}.${sm} ~ ${ey}.${em}`; })()
@@ -1121,8 +1140,41 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
                 github
               </a>
             )}
+            {project.demoUrl && (
+              <a href={project.demoUrl} target="_blank" rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-[10px] font-mono bg-[#00ff41]/10 border border-[#00ff41]/25 hover:border-[#00ff41]/60 text-[#00ff41] px-2.5 py-1 rounded transition-colors">
+                ▶ {project.demoLabel ?? 'demo'}
+              </a>
+            )}
           </div>
         </div>
+
+        {/* Screenshots (재현 데모 캡처) */}
+        {shots.length > 0 && (
+          <div className="mb-4">
+            <div className="grid grid-cols-3 gap-1.5">
+              {shots.slice(0, 3).map((shot, i) => (
+                <button
+                  key={shot.src}
+                  onClick={() => setShotIdx(i)}
+                  className="relative aspect-[16/10] overflow-hidden rounded border border-[#2a2a2a] hover:border-[#00ff41]/40 bg-[#151515] cursor-zoom-in transition-colors"
+                  aria-label={`${project.title} — ${shot.label} 크게 보기`}
+                >
+                  <img src={shot.src} alt={`${project.title} — ${shot.label}`} loading="lazy"
+                    className="w-full h-full object-cover object-top" />
+                  {i === 2 && shots.length > 3 && (
+                    <span className="absolute inset-0 bg-black/65 flex items-center justify-center text-[11px] font-mono text-[#00ff41]">
+                      +{shots.length - 3} more
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+            <p className="text-[9px] font-mono text-[#444] mt-1.5">
+              // 실제 구축 화면 재현 데모 — 수치·인명은 모두 예시 데이터
+            </p>
+          </div>
+        )}
 
         {/* Content */}
         <div className="space-y-3">
@@ -1177,6 +1229,23 @@ function ProjectCard({ project }: { project: typeof PROJECTS[0] }) {
           ))}
         </div>
       </TerminalWindow>
+
+      {shotIdx !== null && shots.length > 0 && (
+        <Lightbox
+          item={{
+            id: project.id,
+            title: project.title,
+            subtitle: project.subtitle,
+            url: 'haccp-demo — 화면 재현 · 예시 데이터',
+            liveUrl: null,
+            tags: [],
+            shots,
+          }}
+          index={shotIdx}
+          onClose={() => setShotIdx(null)}
+          onNav={navShot}
+        />
+      )}
     </article>
   );
 }
