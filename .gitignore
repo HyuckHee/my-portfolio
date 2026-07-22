@@ -13,5 +13,8 @@ dist/
 .gstack/
 .vercel/
 
+# Claude Code 로컬 권한 설정 — 머신별 세션 상태라 공유 불필요
+.claude/settings.local.json
+
 # OS
 .DS_Store
