@@ -5,13 +5,16 @@
  *   첫 포인터 입력에서 unlock()을 호출해 resume한다.
  * - 2023과 달리 오디오 실패가 게임 로직(히트 판정)을 막지 않는다 — 전부 fire-and-forget.
  */
-const SHOOT_SRC = '/game/sounds/shooting/shootSound.mp3';
+/** 포트폴리오 웹 셸의 기본 경로 (public/). 앱인토스 셸은 번들된 URL을 주입한다 */
+export const DEFAULT_SHOOT_SRC = '/game/sounds/shooting/shootSound.mp3';
 
 export class AudioBus {
   private ctx: AudioContext | null = null;
   private shootBuffer: AudioBuffer | null = null;
   private loading = false;
   private muted = false;
+
+  constructor(private shootSrc: string = DEFAULT_SHOOT_SRC) {}
 
   setMuted(muted: boolean) {
     this.muted = muted;
@@ -38,7 +41,7 @@ export class AudioBus {
     if (!this.ctx) return;
     this.loading = true;
     try {
-      const res = await fetch(SHOOT_SRC);
+      const res = await fetch(this.shootSrc);
       const data = await res.arrayBuffer();
       this.shootBuffer = await this.ctx.decodeAudioData(data);
     } catch {

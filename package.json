@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:appintoss": "vite --config vite.appintoss.config.ts",
+    "build:appintoss": "tsc && vite build --config vite.appintoss.config.ts",
+    "appintoss:clean": "node -e \"require('fs').rmSync('dist-appintoss',{recursive:true,force:true})\"",
+    "appintoss:build": "npm run appintoss:clean && ait build",
+    "appintoss:deploy": "ait deploy"
   },
   "dependencies": {
     "framer-motion": "^12.0.0",
@@ -14,6 +19,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@apps-in-toss/web-framework": "^2.10.7",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",

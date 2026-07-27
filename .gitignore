@@ -4,6 +4,11 @@ node_modules/
 # build output (Vercel이 자체 빌드하므로 커밋 불필요)
 dist/
 
+# 앱인토스 미니앱 빌드 산출물
+dist-appintoss/
+.granite/
+*.ait
+
 # env — 로컬 시크릿, 절대 커밋 금지
 .env
 .env.local

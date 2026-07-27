@@ -5,8 +5,7 @@
  * 스테이지 진화(2026 전용): 스테이지 1~2는 2023과 동일한 정지 적 + classic 보스(비교 기준점).
  * 스테이지 3+부터 적이 드리프트 이동하고 보스 패턴이 진화한다 — 설계 문서 "스테이지 진화" 표 참조.
  */
-export const FIELD_W = 700;
-export const FIELD_H = 550;
+import { field } from './layout';
 
 export type EnemyKind = 'normal' | 'boss' | 'civilian';
 
@@ -93,8 +92,8 @@ export function spawnEnemy(kind: EnemyKind, gameTime: number, stage: number): En
   else if (pattern !== 'classic') speed = enemySpeedFor(stage) * 1.25; // 보스는 타깃이 커서(140px) 더 빨라도 공정
 
   const { vx, vy } = speed > 0 ? randomVelocity(speed) : { vx: 0, vy: 0 };
-  const x = randomPos(FIELD_W, spec.size);
-  const y = randomPos(FIELD_H, spec.size);
+  const x = randomPos(field.w, spec.size);
+  const y = randomPos(field.h, spec.size);
 
   return {
     kind,
@@ -127,9 +126,9 @@ export function updateEnemies(enemies: Enemy[], dt: number, gameTime: number): E
       e.x += e.vx * dt;
       e.y += e.vy * dt;
       if (e.x < 0) { e.x = 0; e.vx = Math.abs(e.vx); }
-      if (e.x > FIELD_W - e.size) { e.x = FIELD_W - e.size; e.vx = -Math.abs(e.vx); }
+      if (e.x > field.w - e.size) { e.x = field.w - e.size; e.vx = -Math.abs(e.vx); }
       if (e.y < 0) { e.y = 0; e.vy = Math.abs(e.vy); }
-      if (e.y > FIELD_H - e.size) { e.y = FIELD_H - e.size; e.vy = -Math.abs(e.vy); }
+      if (e.y > field.h - e.size) { e.y = field.h - e.size; e.vy = -Math.abs(e.vy); }
     }
 
     if (e.pattern === 'phantom' && gameTime >= e.nextSelfTeleportAt) {
@@ -142,8 +141,8 @@ export function updateEnemies(enemies: Enemy[], dt: number, gameTime: number): E
 }
 
 function teleportEnemy(e: Enemy) {
-  e.x = randomPos(FIELD_W, e.size);
-  e.y = randomPos(FIELD_H, e.size);
+  e.x = randomPos(field.w, e.size);
+  e.y = randomPos(field.h, e.size);
   e.prevX = e.x; // 텔레포트는 보간하지 않는다 (순간이동이 미끄러져 보이면 안 됨)
   e.prevY = e.y;
 }

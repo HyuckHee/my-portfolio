@@ -1,23 +1,43 @@
 /**
  * Canvas 2D 렌더러.
- * - 논리 좌표계는 700×610(HUD 60 + 필드 550)으로 고정하고, devicePixelRatio만큼
- *   백킹스토어를 키워 레티나에서도 선명하게 그린다.
+ * - HUD는 CSS 픽셀 좌표계, 필드는 논리 좌표계로 그린다(layout.ts 참조).
+ *   덕분에 데스크톱 고정 스테이지(700×610)와 앱인토스 세로 전체화면이 같은 코드를 쓴다.
+ * - devicePixelRatio만큼 백킹스토어를 키워 레티나에서도 선명하다.
  * - 적은 2023의 CSS wobble(±2deg)을 캔버스 회전으로 재현.
  */
 import { bossHueFor, type Enemy } from './entities';
 import type { Particle } from './particles';
+import { desktopLayout, REF_FIELD_H, REF_FIELD_W, REF_HUD_H, type Layout } from './layout';
 
-export const HUD_H = 60;
-export const CANVAS_W = 700;
-export const CANVAS_H = HUD_H + 550;
+/** 데스크톱 고정 스테이지 크기 — 포트폴리오 셸이 캔버스 CSS 크기로 쓴다 */
+export const HUD_H = REF_HUD_H;
+export const CANVAS_W = REF_FIELD_W;
+export const CANVAS_H = REF_HUD_H + REF_FIELD_H;
 
-const IMG_SRC = {
+export interface RendererAssets {
+  bg: string;
+  enemy: string;
+  boss: string;
+}
+
+/** 데스크톱 셸이 쓰는 기본 에셋 경로 (public/) */
+export const DEFAULT_ASSETS: RendererAssets = {
   bg: '/game/img/shooting/shooting_bg.png',
   enemy: '/game/img/shooting/enemy.png',
   boss: '/game/img/shooting/boss.svg',
-} as const;
+};
 
-type ImageKey = keyof typeof IMG_SRC;
+export interface RendererOptions {
+  assets?: RendererAssets;
+  /**
+   * 배경 이미지 맞춤 방식.
+   * - `stretch`: 필드에 늘려 채운다 (데스크톱 — 기존 렌더 결과 유지)
+   * - `cover`: 비율을 지키며 채우고 넘치는 부분은 잘라낸다 (세로 화면 왜곡 방지)
+   */
+  bgFit?: 'stretch' | 'cover';
+}
+
+type ImageKey = keyof RendererAssets;
 
 export interface Scene {
   enemies: Enemy[];
@@ -39,24 +59,34 @@ export class Renderer {
   private images = new Map<ImageKey, HTMLImageElement>();
   /** 스테이지별 보스 색조 캐시 — key: hue(도) */
   private tintCache = new Map<number, HTMLCanvasElement>();
+  private assets: RendererAssets;
+  private bgFit: 'stretch' | 'cover';
+  private layout: Layout = desktopLayout();
+  private dpr = 1;
 
-  constructor(private canvas: HTMLCanvasElement) {
+  constructor(
+    private canvas: HTMLCanvasElement,
+    options: RendererOptions = {},
+  ) {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Canvas 2D context unavailable');
     this.ctx = ctx;
-    this.applyDpr();
+    this.assets = options.assets ?? DEFAULT_ASSETS;
+    this.bgFit = options.bgFit ?? 'stretch';
+    this.setLayout(this.layout);
   }
 
-  private applyDpr() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    this.canvas.width = CANVAS_W * dpr;
-    this.canvas.height = CANVAS_H * dpr;
-    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  /** 레이아웃 변경(회전·리사이즈) 시 백킹스토어를 다시 잡는다 */
+  setLayout(layout: Layout) {
+    this.layout = layout;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.canvas.width = Math.round(layout.cssW * this.dpr);
+    this.canvas.height = Math.round(layout.cssH * this.dpr);
   }
 
   async loadAssets(): Promise<void> {
     await Promise.all(
-      (Object.entries(IMG_SRC) as [ImageKey, string][]).map(
+      (Object.entries(this.assets) as [ImageKey, string][]).map(
         ([key, src]) =>
           new Promise<void>((resolve, reject) => {
             const img = new Image();
@@ -72,76 +102,113 @@ export class Renderer {
   }
 
   draw(scene: Scene, alpha: number) {
-    const { ctx } = this;
-    ctx.save();
-    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+    const { ctx, layout } = this;
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.clearRect(0, 0, layout.cssW, layout.cssH);
 
     this.drawHud(scene);
 
-    // 필드 영역 (흔들림은 필드에만 적용)
+    // 필드 영역 (흔들림은 필드에만, CSS px 단위로 적용 — 기기와 무관하게 같은 세기)
     ctx.save();
     ctx.beginPath();
-    ctx.rect(0, HUD_H, CANVAS_W, CANVAS_H - HUD_H);
+    ctx.rect(0, layout.hudH, layout.cssW, layout.cssH - layout.hudH);
     ctx.clip();
-    ctx.translate(scene.shake.x, HUD_H + scene.shake.y);
+    ctx.translate(scene.shake.x, layout.hudH + scene.shake.y);
+    ctx.scale(layout.scale, layout.scale);
 
-    const bg = this.images.get('bg');
-    if (bg) ctx.drawImage(bg, -8, -8, CANVAS_W + 16, CANVAS_H - HUD_H + 16);
+    this.drawBackground();
 
     for (const e of scene.enemies) this.drawEnemy(e, scene.gameTime, scene.stage, alpha);
     this.drawParticles(scene.particles, alpha);
     if (scene.playing) this.drawBanner(scene);
 
     ctx.restore();
-    ctx.restore();
+  }
+
+  /** 8px 여백을 더해 흔들릴 때 가장자리가 비지 않게 한다 */
+  private drawBackground() {
+    const bg = this.images.get('bg');
+    if (!bg) return;
+    const { ctx, layout } = this;
+    const w = layout.fieldW + 16;
+    const h = layout.fieldH + 16;
+
+    if (this.bgFit === 'stretch') {
+      ctx.drawImage(bg, -8, -8, w, h);
+      return;
+    }
+
+    // cover — 원본 비율을 지키며 채우고 넘치는 쪽을 중앙 기준으로 잘라낸다
+    const sw = bg.naturalWidth || w;
+    const sh = bg.naturalHeight || h;
+    const s = Math.max(w / sw, h / sh);
+    const dw = sw * s;
+    const dh = sh * s;
+    ctx.drawImage(bg, -8 - (dw - w) / 2, -8 - (dh - h) / 2, dw, dh);
   }
 
   /** 스테이지 전환 배너 — 새 시스템 안내, 마지막 500ms 동안 페이드아웃 */
   private drawBanner(scene: Scene) {
     const remaining = scene.banner.until - scene.gameTime;
     if (remaining <= 0 || !scene.banner.title) return;
-    const { ctx } = this;
-    const fieldH = CANVAS_H - HUD_H;
+    const { ctx, layout } = this;
     const fade = Math.min(1, remaining / 500);
 
     ctx.save();
     ctx.globalAlpha = 0.65 * fade;
     ctx.fillStyle = '#000';
-    ctx.fillRect(0, fieldH / 2 - 58, CANVAS_W, 116);
+    ctx.fillRect(0, layout.fieldH / 2 - 58, layout.fieldW, 116);
 
     ctx.globalAlpha = fade;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#00ff41';
     ctx.font = 'bold 40px "JetBrains Mono", ui-monospace, monospace';
-    ctx.fillText(scene.banner.title, CANVAS_W / 2, fieldH / 2 - 16);
+    ctx.fillText(scene.banner.title, layout.fieldW / 2, layout.fieldH / 2 - 16);
+
+    // 좁은 세로 화면에서 안내문이 잘리지 않도록 필요한 만큼만 줄인다
     ctx.fillStyle = '#ffd447';
-    ctx.font = '17px "JetBrains Mono", ui-monospace, monospace';
-    ctx.fillText(scene.banner.sub, CANVAS_W / 2, fieldH / 2 + 26);
+    let size = 17;
+    const maxWidth = layout.fieldW * 0.92;
+    do {
+      ctx.font = `${size}px "JetBrains Mono", ui-monospace, monospace`;
+      if (ctx.measureText(scene.banner.sub).width <= maxWidth) break;
+      size -= 1;
+    } while (size > 10);
+    ctx.fillText(scene.banner.sub, layout.fieldW / 2, layout.fieldH / 2 + 26);
     ctx.restore();
   }
 
   private drawHud(scene: Scene) {
-    const { ctx } = this;
+    const { ctx, layout } = this;
+    const w = layout.cssW;
+    // 노치/상태바 아래 영역의 중앙에 내용을 놓는다
+    const cy = layout.hudTop + (layout.hudH - layout.hudTop) / 2;
+    // 좁은 화면(모바일 세로)에서는 'score : ' 라벨을 떼서 가운데 하트와 겹치지 않게 한다.
+    // 데스크톱 폭(700)에서는 아래 값이 전부 기존 상수와 같아져 렌더 결과가 그대로 유지된다.
+    const fontSize = Math.min(22, w * 0.055);
+    const pad = 20;
+    const scoreText = w < 480 ? `${scene.score}` : `score : ${scene.score}`;
+
     ctx.fillStyle = '#111';
-    ctx.fillRect(0, 0, CANVAS_W, HUD_H);
+    ctx.fillRect(0, 0, w, layout.hudH);
     ctx.fillStyle = '#00ff41';
-    ctx.font = 'bold 22px "JetBrains Mono", ui-monospace, monospace';
+    ctx.font = `bold ${fontSize}px "JetBrains Mono", ui-monospace, monospace`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
-    ctx.fillText(`score : ${scene.score}`, 20, HUD_H / 2);
+    ctx.fillText(scoreText, pad, cy);
     ctx.textAlign = 'right';
-    ctx.fillText(`lv.${scene.stage}`, CANVAS_W - 20, HUD_H / 2);
+    ctx.fillText(`lv.${scene.stage}`, w - pad, cy);
 
     // LIFE 하트 — 중앙 (잃은 라이프는 어둡게)
     ctx.textAlign = 'center';
     ctx.font = '20px ui-monospace, monospace';
     for (let i = 0; i < MAX_LIVES_DISPLAY; i++) {
       ctx.fillStyle = i < scene.lives ? '#ff5f57' : '#3a3a3a';
-      ctx.fillText('♥', CANVAS_W / 2 + (i - 1) * 30, HUD_H / 2);
+      ctx.fillText('♥', w / 2 + (i - 1) * 30, cy);
     }
     ctx.strokeStyle = 'rgba(0,255,65,0.25)';
-    ctx.strokeRect(0.5, 0.5, CANVAS_W - 1, HUD_H - 1);
+    ctx.strokeRect(0.5, 0.5, w - 1, layout.hudH - 1);
   }
 
   private drawEnemy(e: Enemy, gameTime: number, stage: number, alpha: number) {

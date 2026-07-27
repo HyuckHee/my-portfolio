@@ -1,26 +1,15 @@
 /**
- * 슈팅 게임 2026 — 2023년 바닐라 JS 버전의 TypeScript + Canvas 리라이트.
+ * 슈팅 게임 2026 (포트폴리오 웹 셸) — 2023년 바닐라 JS 버전의 TypeScript + Canvas 리라이트.
  * 게임플레이 규칙은 2023 원본과 동일하게 재현하고(설계 문서 규칙 명세 참조),
  * 아키텍처(고정 타임스텝·상태머신)와 게임필(파티클·흔들림·사운드)을 현대화했다.
  * TOP 10 랭킹은 2023년 주석으로 남아있던 미완성 기능의 완성이다.
+ *
+ * 규칙·렌더 코어는 `engine.ts`에 있고 앱인토스 미니앱 셸(`src/game-toss/`)과 공유한다.
+ * 이 파일은 700×610 고정 스테이지와 오버레이 UI(타이틀·게임오버·Supabase 랭킹)만 담당한다.
  */
-import { createLoop } from './loop';
-import { createSession, startGame, stageUp } from './state';
-import {
-  spawnEnemy,
-  updateEnemies,
-  hitEnemy,
-  isExpired,
-  containsPoint,
-  CIVILIAN_STAGE,
-  civilianChanceFor,
-  type Enemy,
-} from './entities';
-import { Renderer, CANVAS_W, CANVAS_H, HUD_H } from './renderer';
-import { burst, updateParticles, type Particle } from './particles';
-import { ScreenShake } from './effects';
-import { AudioBus } from './audio';
-import { attachInput } from './input';
+import { createGame, exposeDebugHooks } from './engine';
+import { desktopLayout } from './layout';
+import { CANVAS_W, CANVAS_H } from './renderer';
 import {
   leaderboardEnabled,
   fetchTop10,
@@ -45,171 +34,18 @@ app.innerHTML = `
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 const overlay = document.getElementById('overlay') as HTMLDivElement;
 
-/* ─── 시스템 구성 ─── */
-const session = createSession();
-const enemies: Enemy[] = [];
-const particles: Particle[] = [];
-const shake = new ScreenShake();
-const audio = new AudioBus();
-const renderer = new Renderer(canvas);
-
 let top10: ScoreRow[] | null = null;
 let lastRunScore = 0;
 
-/* ─── 업데이트 (고정 타임스텝) ─── */
-function update(dt: number) {
-  shake.update(dt);
-  updateParticles(particles, dt);
-  if (session.phase !== 'playing') return;
-
-  session.gameTime += dt;
-  session.spawnTimer += dt;
-
-  // 일반 적 스폰 — 쿼터까지 spawnInterval 간격
-  if (session.spawned < session.enemyQuota && session.spawnTimer >= session.spawnInterval) {
-    session.spawnTimer = 0;
-    enemies.push(spawnEnemy('normal', session.gameTime, session.stage));
-    session.spawned += 1;
-    if (session.spawned === session.enemyQuota) session.bossCountdown = 500; // 보스 예고
-
-    // 스테이지 5+: 일반 적 스폰과 함께 확률적으로 민간인(우주비행사) 등장 — 스테이지가 오를수록 잦아짐
-    if (session.stage >= CIVILIAN_STAGE && Math.random() < civilianChanceFor(session.stage)) {
-      enemies.push(spawnEnemy('civilian', session.gameTime, session.stage));
-    }
-  }
-
-  // 보스 스폰 — 쿼터 도달 +500ms (게임 시간 기준)
-  if (session.bossCountdown !== null && !session.bossSpawned) {
-    session.bossCountdown -= dt;
-    if (session.bossCountdown <= 0) {
-      enemies.push(spawnEnemy('boss', session.gameTime, session.stage));
-      session.bossSpawned = true;
-    }
-  }
-
-  // 스테이지 3+ 진화: 이동(벽 반사) + phantom 보스 자가 텔레포트
-  const selfTeleported = updateEnemies(enemies, dt, session.gameTime);
-  for (const e of selfTeleported) {
-    burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#b48cff', 8, 0.15);
-  }
-
-  // 민간인은 수명이 다하면 무벌점 퇴장
-  for (let i = enemies.length - 1; i >= 0; i--) {
-    const e = enemies[i];
-    if (e.kind === 'civilian' && isExpired(e, session.gameTime)) {
-      burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#9ecbff', 6, 0.1);
-      enemies.splice(i, 1);
-    }
-  }
-
-  // 수명 초과 → 라이프 차감 (2026 전용 규칙: 2023은 1미스 즉사)
-  // 같은 틱에 여러 마리가 만료돼도 라이프는 1개만 차감 — 일괄 제거로 연쇄 차감 방지
-  const expired = enemies.filter((e) => isExpired(e, session.gameTime));
-  if (expired.length > 0) {
-    let bossLost = false;
-    for (const e of expired) {
-      burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#ff5f57', 14, 0.2);
-      if (e.kind === 'boss') bossLost = true;
-      enemies.splice(enemies.indexOf(e), 1);
-    }
-    session.lives -= 1;
-    shake.trigger(8, 250);
-
-    if (session.lives <= 0) {
-      gameOver();
-      return;
-    }
-    audio.lifeLost();
-    // 보스를 놓쳤으면 재소환 예약 (안 하면 스테이지 진행 불가)
-    if (bossLost) {
-      session.bossSpawned = false;
-      session.bossCountdown = 500;
-    }
-  }
-}
-
-/* ─── 히트 판정 ─── */
-function onTap(x: number, y: number) {
-  audio.unlock();
-  if (session.phase !== 'playing') return;
-  const fx = x;
-  const fy = y - HUD_H;
-  // 겹칠 때 나중에 그려진(위에 보이는) 적부터
-  for (let i = enemies.length - 1; i >= 0; i--) {
-    const e = enemies[i];
-    if (!e.alive || !containsPoint(e, fx, fy)) continue;
-
-    // 민간인 오사(誤射): 점수 대신 라이프를 잃는다
-    if (e.kind === 'civilian') {
-      enemies.splice(i, 1);
-      session.lives -= 1;
-      burst(particles, e.x + e.size / 2, e.y + e.size / 2, '#ff5f57', 20, 0.22);
-      shake.trigger(9, 250);
-      if (session.lives <= 0) {
-        gameOver();
-        return;
-      }
-      audio.civilianHit();
-      return;
-    }
-
-    const result = hitEnemy(e, session.gameTime);
-    const cx = e.x + e.size / 2;
-    const cy = e.y + e.size / 2;
-
-    if (result.killed) {
-      session.score += e.value;
-      enemies.splice(i, 1);
-      burst(particles, cx, cy, e.kind === 'boss' ? '#ffd447' : '#7dff9b', e.kind === 'boss' ? 42 : 16);
-      if (e.kind === 'boss') {
-        shake.trigger(10, 300);
-        audio.stageClear();
-        clearStage();
-      } else {
-        shake.trigger(4, 120);
-        audio.shoot();
-      }
-    } else {
-      // 보스 텔레포트 (1~4번째 히트)
-      burst(particles, cx, cy, '#ff8c66', 10);
-      shake.trigger(6, 150);
-      audio.bossHit();
-    }
-    return; // 한 번의 탭은 한 마리만
-  }
-}
-
-function clearStage() {
-  enemies.length = 0; // 2023 규칙: 스테이지 클리어 시 필드 정리
-  stageUp(session);
-}
-
-function gameOver() {
-  session.phase = 'gameover';
-  lastRunScore = session.score;
-  enemies.length = 0;
-  shake.trigger(12, 300);
-  audio.gameOver();
-  void showGameOver();
-}
-
-/* ─── 렌더 ─── */
-const loop = createLoop(update, (alpha) => {
-  renderer.draw(
-    {
-      enemies,
-      particles,
-      shake: shake.offset(),
-      score: session.score,
-      stage: session.stage,
-      lives: session.lives,
-      gameTime: session.gameTime,
-      playing: session.phase === 'playing',
-      banner: { title: session.bannerTitle, sub: session.bannerSub, until: session.bannerUntil },
-    },
-    alpha,
-  );
+const game = createGame({
+  canvas,
+  layout: desktopLayout(),
+  onGameOver: (score) => {
+    lastRunScore = score;
+    void showGameOver();
+  },
 });
+const { audio } = game;
 
 /* ─── 오버레이 UI (타이틀 / 게임오버 / 랭킹) ─── */
 function boardHtml(rows: ScoreRow[] | null): string {
@@ -226,7 +62,7 @@ function boardHtml(rows: ScoreRow[] | null): string {
 }
 
 function showTitle() {
-  session.phase = 'title';
+  game.session.phase = 'title';
   overlay.innerHTML = `
     <div class="panel">
       <h1>SHOOTING <span>2026</span></h1>
@@ -239,9 +75,7 @@ function showTitle() {
   overlay.querySelector('#start')?.addEventListener('click', () => {
     audio.unlock();
     overlay.innerHTML = '';
-    enemies.length = 0;
-    particles.length = 0;
-    startGame(session);
+    game.startRun();
   });
 }
 
@@ -307,9 +141,7 @@ async function showGameOver() {
 
   overlay.querySelector('#retry')?.addEventListener('click', () => {
     overlay.innerHTML = '';
-    enemies.length = 0;
-    particles.length = 0;
-    startGame(session);
+    game.startRun();
   });
   overlay.querySelector('#to-title')?.addEventListener('click', () => void refreshBoardAndShowTitle());
 }
@@ -351,36 +183,13 @@ app.querySelector('.stage')?.appendChild(muteBtn);
 applyMute(localStorage.getItem(MUTE_KEY) === '1');
 
 /* ─── 부트스트랩 ─── */
-attachInput(canvas, onTap);
-
-// dev 전용 상태 조회 훅 (프로덕션 번들에서 제거됨)
-if (import.meta.env.DEV) {
-  // 스테이지 점프 — 상위 스테이지 기능(민간인·팬텀) 테스트용
-  (window as unknown as Record<string, unknown>).__gameForceStage = (n: number) => {
-    if (session.phase !== 'playing') return 'not playing';
-    session.stage = n - 1;
-    enemies.length = 0;
-    stageUp(session);
-    return `stage ${session.stage}`;
-  };
-  (window as unknown as Record<string, unknown>).__gameDebug = () => ({
-    phase: session.phase,
-    stage: session.stage,
-    score: session.score,
-    lives: session.lives,
-    gameTime: Math.round(session.gameTime),
-    enemies: enemies.map((e) => ({ kind: e.kind, hitsLeft: e.hitsLeft, x: e.x, y: e.y, size: e.size, vx: e.vx, vy: e.vy, pattern: e.pattern })),
-    banner: { title: session.bannerTitle, sub: session.bannerSub, activeFor: Math.max(0, Math.round(session.bannerUntil - session.gameTime)) },
-    spawnInterval: session.spawnInterval,
-  });
-}
+if (import.meta.env.DEV) exposeDebugHooks(game);
 
 (async () => {
   fit();
-  const [, rows] = await Promise.all([renderer.loadAssets(), fetchTop10()]);
+  const [, rows] = await Promise.all([game.boot(), fetchTop10()]);
   top10 = rows;
   showTitle();
-  loop.start();
 })().catch((err) => {
   overlay.innerHTML = `<div class="panel"><h1 class="over">LOAD ERROR</h1><p class="sub">${String(err)}</p></div>`;
 });

@@ -1,0 +1,272 @@
+/*
+ * 앱인토스 미니앱 셸 스타일 — 세로 전체화면.
+ * 웹뷰에서 스크롤·바운스·더블탭 확대·길게 눌러 선택이 모두 게임 조작을 방해하므로 전부 잠근다.
+ * 외부 웹폰트는 쓰지 않는다(번들 안에서 실행되므로 네트워크 대기 = 첫 화면 지연).
+ */
+:root {
+  --neon: #00ff41;
+  --gold: #ffd447;
+  --danger: #ff5f57;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #050505;
+  color: #cfe;
+  font-family: var(--font-mono);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* HUD 아래 필드 영역만 덮는다 — 상단 점수/라이프는 항상 보이게.
+   --hud-h 는 레이아웃 계산 후 셸이 주입한다 (main.ts) */
+.overlay {
+  position: absolute;
+  top: var(--hud-h, 60px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  pointer-events: none;
+}
+
+.overlay:empty {
+  display: none;
+}
+
+.panel {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 420px;
+  max-height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  text-align: center;
+  background: rgba(8, 12, 8, 0.9);
+  border: 1px solid rgba(0, 255, 65, 0.35);
+  border-radius: 16px;
+  padding: 24px 20px;
+}
+
+.panel h1 {
+  margin: 0 0 6px;
+  color: #fff;
+  letter-spacing: 3px;
+  font-size: 28px;
+}
+
+.panel h1 span {
+  color: var(--neon);
+}
+
+.panel h1.over {
+  color: var(--danger);
+}
+
+.sub {
+  margin: 0 0 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8a9;
+}
+
+.final {
+  font-size: 30px;
+  color: var(--neon);
+  margin: 6px 0 16px;
+}
+
+.hint {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #678;
+  margin: 14px 0 0;
+}
+
+/* 터치 타깃은 48px 이상 */
+.btn {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  margin: 8px 0 0;
+  background: var(--neon);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font: bold 16px var(--font-mono);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn.dim {
+  background: transparent;
+  color: #9ab;
+  border: 1px solid #345;
+}
+
+.btn.gold {
+  background: var(--gold);
+  color: #000;
+}
+
+.board {
+  margin: 10px 0 14px;
+}
+
+.board-title {
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin: 0 0 8px;
+}
+
+.board ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.board li {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 2px 0;
+  color: #bcd;
+  white-space: pre;
+}
+
+.board li:first-child {
+  color: var(--gold);
+}
+
+.board .rank {
+  color: var(--neon);
+  width: 2.2em;
+  text-align: right;
+}
+
+.board .name {
+  width: 3.4em;
+  text-align: left;
+  letter-spacing: 2px;
+}
+
+.board .pts {
+  width: 5.5em;
+  text-align: right;
+}
+
+.board .empty {
+  color: #567;
+  font-size: 11px;
+}
+
+.entry {
+  margin: 10px 0 12px;
+}
+
+.entry-title {
+  color: var(--gold);
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+.entry form {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.entry input {
+  width: 5.2em;
+  background: #06130a;
+  color: var(--neon);
+  border: 1px solid rgba(0, 255, 65, 0.5);
+  border-radius: 10px;
+  font: bold 24px var(--font-mono);
+  text-align: center;
+  letter-spacing: 6px;
+  padding: 10px 4px;
+  text-transform: uppercase;
+}
+
+.entry button {
+  background: var(--gold);
+  border: none;
+  border-radius: 10px;
+  padding: 0 20px;
+  min-height: 52px;
+  font: bold 15px var(--font-mono);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.entry button:disabled {
+  opacity: 0.5;
+}
+
+.entry-error {
+  color: var(--danger);
+  font-size: 11px;
+  min-height: 14px;
+  margin: 8px 0 0;
+}
+
+/* 음소거 — 필드 우측 상단(HUD 바로 아래). 플레이 중에도 눌러야 하므로 오버레이 밖에 둔다 */
+.mute-btn {
+  position: absolute;
+  top: calc(var(--hud-h, 60px) + 8px);
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.25);
+  border-radius: 10px;
+  font-size: 16px;
+  line-height: 1;
+  color: #cfe;
+  cursor: pointer;
+  z-index: 10;
+  touch-action: manipulation;
+}
