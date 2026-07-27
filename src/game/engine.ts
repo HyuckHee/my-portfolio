@@ -2,7 +2,7 @@
  * 게임 코어 — 상태머신·스폰·히트 판정·렌더 루프를 하나로 묶는다.
  *
  * UI(타이틀/게임오버 오버레이)와 플랫폼 연동(랭킹·햅틱)은 셸이 맡는다.
- * 덕분에 포트폴리오 웹(`src/game/main.ts`)과 앱인토스 미니앱(`src/game-toss/main.ts`)이
+ * 덕분에 포트폴리오 웹(`src/game/main.ts`)과 앱인토스 미니앱(`appintoss/src/main.ts`)이
  * 규칙 코드를 한 벌만 공유한다.
  */
 import { createLoop } from './loop';

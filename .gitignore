@@ -4,8 +4,7 @@ node_modules/
 # build output (Vercel이 자체 빌드하므로 커밋 불필요)
 dist/
 
-# 앱인토스 미니앱 빌드 산출물
-dist-appintoss/
+# 앱인토스 미니앱 빌드 산출물 (appintoss/ 는 자체 패키지 — dist/ · node_modules/ 는 위 규칙이 커버)
 .granite/
 *.ait
 

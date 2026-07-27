@@ -5,24 +5,35 @@
 
 ## 구조
 
-```
-src/game/            게임 코어 — 두 셸이 공유
-  engine.ts            루프·스폰·히트 판정·스테이지 (신규: main.ts에서 분리)
-  layout.ts            좌표계 정의 (신규)
-  renderer.ts          HUD는 CSS px, 필드는 논리 px
-  entities.ts          필드 크기를 layout.field에서 읽는다
-  main.ts              ← 포트폴리오 웹 셸 (700×610 고정)
+미니앱은 **`appintoss/`에 자체 package.json을 가진 별도 패키지**다.
+앱인토스 SDK 의존성 트리가 1GB에 가까운데 포트폴리오 빌드는 그걸 하나도 쓰지 않기 때문이다.
+루트 `npm install`(= Vercel 빌드)은 SDK를 건드리지 않는다.
 
-src/game-toss/       앱인토스 셸
-  main.ts              세로 전체화면 레이아웃 + 오버레이 UI
-  toss.ts              네이티브 브릿지 래퍼 (전부 fail-soft)
-  styles.css
-  assets/*.webp        미니앱 전용 경량 에셋
-
-appintoss/index.html   미니앱 엔트리
-granite.config.ts      앱인토스 설정
-vite.appintoss.config.ts
 ```
+src/game/              게임 코어 — 두 셸이 공유
+  engine.ts              루프·스폰·히트 판정·스테이지 (신규: main.ts에서 분리)
+  layout.ts              좌표계 정의 (신규)
+  renderer.ts            HUD는 CSS px, 필드는 논리 px
+  entities.ts            필드 크기를 layout.field에서 읽는다
+  main.ts                ← 포트폴리오 웹 셸 (700×610 고정)
+
+appintoss/             ← 미니앱 패키지 (자체 node_modules)
+  package.json
+  tsconfig.json          include에 ../src/game 을 넣어 코어까지 타입체크
+  granite.config.ts      앱인토스 설정
+  vite.config.ts
+  index.html
+  src/
+    main.ts              세로 전체화면 레이아웃 + 오버레이 UI
+    toss.ts              네이티브 브릿지 래퍼 (전부 fail-soft)
+    styles.css
+    assets/*.webp        미니앱 전용 경량 에셋
+
+scripts/build-appintoss-assets.mjs   원본 PNG → 경량 WebP 변환
+```
+
+게임 코어는 `../../src/game/...` 상대 경로로 가져다 쓴다. 코어는 npm 패키지를 하나도
+import하지 않는 순수 TS라 패키지 경계를 넘어도 문제가 없다.
 
 ### 좌표계 — 화면 비율이 난이도를 바꾸지 않게
 
@@ -44,7 +55,7 @@ HUD만 CSS 픽셀로 그린다 — 기기가 달라도 점수·하트가 같은 
 
 ## 토스 연동
 
-`src/game-toss/toss.ts`가 감싼다. **전부 fail-soft** — 토스 앱 밖에서는 호출이 조용히 무시되므로
+`appintoss/src/toss.ts`가 감싼다. **전부 fail-soft** — 토스 앱 밖에서는 호출이 조용히 무시되므로
 같은 빌드를 데스크톱 브라우저에서 그대로 열어 개발·QA할 수 있다.
 
 | 기능 | 브릿지 | 쓰는 곳 |
@@ -65,18 +76,35 @@ Supabase TOP 10(이니셜 등록)은 웹 버전 그대로 유지된다. 게임�
 
 ## 명령어
 
+처음 한 번은 미니앱 패키지에 의존성을 설치해야 한다:
+
 ```bash
-npm run dev:appintoss      # localhost:4100 — 브라우저에서 모바일 뷰포트로 개발
-npm run build:appintoss    # dist-appintoss/web 으로 웹 번들 빌드
-npm run appintoss:build    # 위 빌드 + .ait 아티팩트 생성 (ait build)
-npm run appintoss:deploy   # .ait 업로드 (ait deploy) — API 키 필요
+cd appintoss && npm install     # SDK 트리 약 1GB — 루트와 분리돼 있다
+```
+
+이후:
+
+```bash
+cd appintoss
+npm run dev          # localhost:4100 — 브라우저에서 모바일 뷰포트로 개발
+npm run build        # dist/web 으로 웹 번들 빌드
+npm run build:ait    # 위 빌드 + .ait 아티팩트 생성
+npm run deploy       # .ait 업로드 — API 키 필요
+```
+
+루트에서 바로 부르는 단축 스크립트도 있다:
+
+```bash
+npm run appintoss:dev
+npm run appintoss:build
+npm run appintoss:deploy
 ```
 
 > `ait build`는 `<outdir>/web/index.html`이 이미 있으면 웹 빌드를 건너뛴다.
-> `appintoss:build`가 먼저 `dist-appintoss`를 지우는 이유다. 직접 `npx ait build`를 부를 거면
-> `npm run appintoss:clean`을 먼저 돌릴 것.
+> `build:ait`가 먼저 `dist`를 지우는 이유다. 직접 `npx ait build`를 부를 거면
+> `npm run clean`을 먼저 돌릴 것.
 
-에셋을 다시 만들 일이 생기면 (원본 PNG 교체 시):
+에셋을 다시 만들 일이 생기면 (원본 PNG 교체 시) — 루트에서:
 
 ```bash
 npm install --no-save sharp
@@ -86,11 +114,11 @@ node scripts/build-appintoss-assets.mjs   # 2,671KB → 106KB
 ## 배포 전 남은 일 (콘솔 작업 — 코드로 못 하는 것)
 
 1. **파트너센터 등록** — <https://toss.im/apps-in-toss>에서 미니앱 등록, 앱 유형 **게임**으로 신청
-2. **`granite.config.ts`의 `brand.icon`** — 지금 빈 문자열. 콘솔에 올린 아이콘 이미지 URL로 채울 것
+2. **`appintoss/granite.config.ts`의 `brand.icon`** — 지금 빈 문자열. 콘솔에 올린 아이콘 이미지 URL로 채울 것
 3. **`appName`** — `shooting-2026`. 콘솔에 등록한 앱 식별자와 반드시 일치시킬 것
 4. **게임센터 리더보드 생성** — 콘솔에서 이 앱의 리더보드를 만들어야 점수 제출이 `SUCCESS`를 반환한다.
    없으면 `LEADERBOARD_NOT_FOUND`가 오고, 코드는 조용히 넘어간다
-5. **배포 토큰** — `npx ait token add`로 API 키 등록 후 `npm run appintoss:deploy`
+5. **배포 토큰** — `appintoss/`에서 `npx ait token add`로 API 키 등록 후 `npm run deploy`
 6. **샌드박스 실기 테스트** — 아래 "검증 안 된 것" 항목들은 실제 토스 앱에서만 확인된다
 
 ## 검증한 것 / 못 한 것
@@ -101,7 +129,8 @@ node scripts/build-appintoss-assets.mjs   # 2,671KB → 106KB
 - 탭 히트 판정 — 논리 좌표 역변환 정확
 - 프로덕션 번들을 하위 경로에서 서빙 — 상대 경로 에셋 전부 로드, 콘솔 에러 0, dev 훅 제거됨
 - 데스크톱 웹 버전 회귀 없음 — 타이틀 화면 픽셀 차이 0, 히트 판정 정상(CSS 축소 배율 0.691 포함)
-- `.ait` 아티팩트 빌드 성공 — `web/` 디렉터리 15개 파일 포함
+- `.ait` 아티팩트 빌드 성공 — `web/` 7개 파일(212KB) 포함
+- 루트 `npm ci` 후 포트폴리오 빌드·타입체크 정상 — SDK 없이도 돌아간다
 
 검증 못 함 (토스 앱 실기 필요):
 

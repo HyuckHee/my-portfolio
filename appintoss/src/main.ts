@@ -8,8 +8,8 @@
  * - 네이티브 연동은 전부 fail-soft(toss.ts) — 일반 브라우저에서도 같은 빌드가 그대로 돌아간다
  */
 import './styles.css';
-import { createGame, exposeDebugHooks, type Game, type GameEvent } from '../game/engine';
-import { fillLayout, type Layout } from '../game/layout';
+import { createGame, exposeDebugHooks, type Game, type GameEvent } from '../../src/game/engine';
+import { fillLayout, type Layout } from '../../src/game/layout';
 import {
   leaderboardEnabled,
   fetchTop10,
@@ -17,7 +17,7 @@ import {
   qualifiesForTop10,
   isValidName,
   type ScoreRow,
-} from '../game/leaderboard';
+} from '../../src/game/leaderboard';
 import {
   haptic,
   inTossApp,

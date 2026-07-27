@@ -5,7 +5,7 @@
  * 다운로드되므로 화면에서 실제로 쓰이는 해상도까지만 줄이고 WebP로 변환한다.
  * (2,671KB → 106KB)
  *
- * 결과물 `src/game-toss/assets/*.webp`는 커밋되어 있으므로 평소 빌드에는 필요 없다.
+ * 결과물 `appintoss/src/assets/*.webp`는 커밋되어 있으므로 평소 빌드에는 필요 없다.
  * 원본 이미지를 교체했을 때만 다시 돌리면 된다:
  *
  *   npm install --no-save sharp
@@ -16,7 +16,7 @@ import { createRequire } from 'node:module';
 
 const sharp = createRequire(import.meta.url)('sharp');
 
-const OUT_DIR = new URL('../src/game-toss/assets/', import.meta.url);
+const OUT_DIR = new URL('../appintoss/src/assets/', import.meta.url);
 mkdirSync(OUT_DIR, { recursive: true });
 
 const jobs = [
@@ -40,5 +40,5 @@ for (const job of jobs) {
   writeFileSync(target, buffer);
   const before = statSync(job.from).size / 1024;
   const after = buffer.length / 1024;
-  console.log(`${job.from} → src/game-toss/assets/${job.to}  ${before.toFixed(0)}KB → ${after.toFixed(1)}KB`);
+  console.log(`${job.from} → appintoss/src/assets/${job.to}  ${before.toFixed(0)}KB → ${after.toFixed(1)}KB`);
 }

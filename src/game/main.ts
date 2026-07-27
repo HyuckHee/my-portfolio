@@ -4,7 +4,7 @@
  * 아키텍처(고정 타임스텝·상태머신)와 게임필(파티클·흔들림·사운드)을 현대화했다.
  * TOP 10 랭킹은 2023년 주석으로 남아있던 미완성 기능의 완성이다.
  *
- * 규칙·렌더 코어는 `engine.ts`에 있고 앱인토스 미니앱 셸(`src/game-toss/`)과 공유한다.
+ * 규칙·렌더 코어는 `engine.ts`에 있고 앱인토스 미니앱 셸(`appintoss/src/`)과 공유한다.
  * 이 파일은 700×610 고정 스테이지와 오버레이 UI(타이틀·게임오버·Supabase 랭킹)만 담당한다.
  */
 import { createGame, exposeDebugHooks } from './engine';

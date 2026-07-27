@@ -15,9 +15,9 @@
 코드는 완성·검증됨 (`docs/apps-in-toss.md`). 남은 건 전부 콘솔 작업이라 직접 해야 한다.
 
 - [ ] **파트너센터 미니앱 등록** — 앱 유형 '게임'으로 신청, `appName`을 `shooting-2026`과 일치시킬 것
-- [ ] **`granite.config.ts`의 `brand.icon`** — 지금 빈 문자열, 콘솔 아이콘 URL로 채우기 (배포 전 필수)
+- [ ] **`appintoss/granite.config.ts`의 `brand.icon`** — 지금 빈 문자열, 콘솔 아이콘 URL로 채우기 (배포 전 필수)
 - [ ] **게임센터 리더보드 생성** — 없으면 점수 제출이 `LEADERBOARD_NOT_FOUND` (코드는 fail-soft로 통과)
-- [ ] **`ait token add` → `npm run appintoss:deploy`**
+- [ ] **`cd appintoss && npx ait token add` → `npm run deploy`**
 - [ ] **샌드박스 실기 테스트** — 햅틱·게임센터·세이프에어리어는 실기에서만 확인 가능
 - [ ] **미니앱에서 Supabase 도달 여부 확인** — 막히면 TOP 10만 빠진다. 막힐 경우 게임센터 리더보드로 일원화 검토
 - [ ] **갤러리 카드 추가** — 실기 스크린샷 확보되면 포트폴리오에 앱인토스 버전 카드 추가

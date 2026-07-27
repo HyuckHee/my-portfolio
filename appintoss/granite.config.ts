@@ -3,7 +3,7 @@
  *
  * 빌드 흐름: `ait build`가 아래 `web.commands.build`를 실행한 뒤
  * `<outdir>/web/index.html`을 찾아 .ait 아티팩트로 묶는다.
- * 그래서 `outdir`와 vite.appintoss.config.ts의 `build.outDir`(= `<outdir>/web`)는 항상 같이 움직여야 한다.
+ * 그래서 `outdir`와 vite.config.ts의 `build.outDir`(= `<outdir>/web`)는 항상 같이 움직여야 한다.
  *
  * `webViewProps.type: 'game'`이 이 미니앱을 게임으로 표시한다 — 토스 게임센터 리더보드 연동의 전제.
  */
@@ -21,8 +21,8 @@ export default defineConfig({
     host: 'localhost',
     port: 4100,
     commands: {
-      dev: 'npm run dev:appintoss',
-      build: 'npm run build:appintoss',
+      dev: 'npm run dev',
+      build: 'npm run build',
     },
   },
   webViewProps: {
@@ -38,5 +38,5 @@ export default defineConfig({
   },
   // 카메라·연락처 등 기기 권한을 쓰지 않는다
   permissions: [],
-  outdir: 'dist-appintoss',
+  outdir: 'dist',
 });

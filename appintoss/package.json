@@ -1,0 +1,21 @@
+{
+  "name": "shooting-2026-appintoss",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "슈팅 게임 2026 앱인토스 미니앱 — 게임 코어(../src/game)는 포트폴리오 웹 버전과 공유한다",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build:ait": "npm run clean && ait build",
+    "deploy": "ait deploy"
+  },
+  "//": "dependencies는 비어 있어도 키가 있어야 한다 — ait build의 collectDependencyVersions가 Object.keys()를 그대로 부른다",
+  "dependencies": {},
+  "devDependencies": {
+    "@apps-in-toss/web-framework": "^2.10.7",
+    "typescript": "^5.7.0",
+    "vite": "^5.4.0"
+  }
+}
