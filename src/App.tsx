@@ -330,7 +330,7 @@ const PROJECTS = [
       '2023년 미완성으로 남았던 랭킹을 Supabase(RLS·CHECK 제약)로 완성 — 오락실식 이니셜 TOP 10',
       '스테이지 진화(이동 적·보스 패턴 변화)·라이프·게임필(파티클·화면흔들림·WebAudio·터치)',
     ],
-    result: '2023 원본과 토글로 비교 플레이 가능한 성장 쇼케이스. 번들 gzip 약 6KB, 방문자 참여형 TOP 10 랭킹 운영 중.',
+    result: '2023 원본과 토글로 비교 플레이 가능한 성장 쇼케이스. 번들 gzip 약 8KB, 방문자 참여형 TOP 10 랭킹 운영 중.',
     tags: ['TypeScript', 'Canvas 2D', 'WebAudio', 'Supabase', 'Vite'],
     highlights: [
       { label: '아키텍처', value: '고정 타임스텝 + 상태머신' },
